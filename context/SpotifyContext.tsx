@@ -235,17 +235,35 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
 
   const play = useCallback(async (uri?: string) => {
     if (!accessToken || !deviceId) return;
-    // Transfer playback to YumiVibe device first
-    await fetch('https://api.spotify.com/v1/me/player', {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ device_ids: [deviceId], play: true }),
-    });
+
     if (uri) {
-      await spotifyApi('/play', accessToken, 'PUT', { context_uri: uri });
+      // Transfer playback without auto-playing
+      await fetch('https://api.spotify.com/v1/me/player', {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ device_ids: [deviceId], play: false }),
+      });
+      // Wait for transfer
+      await new Promise((r) => setTimeout(r, 300));
+      // Play the specific URI — tracks use `uris`, playlists/albums use `context_uri`
+      const isTrack = uri.startsWith('spotify:track:');
+      const body = isTrack
+        ? { uris: [uri], device_id: deviceId }
+        : { context_uri: uri, device_id: deviceId };
+      await spotifyApi('/play', accessToken, 'PUT', body);
+    } else {
+      // Resume playback on this device
+      await fetch('https://api.spotify.com/v1/me/player', {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ device_ids: [deviceId], play: true }),
+      });
     }
   }, [accessToken, deviceId]);
 
