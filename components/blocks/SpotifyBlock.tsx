@@ -98,32 +98,6 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>
       {error && <p className="text-error text-xs mb-2">{error}</p>}
 
-      {/* Spotify connect banner */}
-      {!spotify.isConnected && (
-        <button
-          onClick={spotify.connect}
-          className="flex items-center gap-2 px-3 py-2 mb-3 rounded-xl bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-base">link</span>
-          Connect Spotify for full control (skip, previous)
-        </button>
-      )}
-
-      {spotify.isConnected && (
-        <div className="flex items-center justify-between mb-3 relative z-10">
-          <span className="flex items-center gap-1 text-xs text-[#1DB954]">
-            <span className="w-2 h-2 rounded-full bg-[#1DB954]" />
-            Connected
-          </span>
-          <button
-            onClick={(e) => { e.stopPropagation(); spotify.disconnect(); }}
-            className="text-xs text-on-surface-variant/40 hover:text-error cursor-pointer px-2 py-1 rounded-lg hover:bg-error/10 transition-colors"
-          >
-            Disconnect
-          </button>
-        </div>
-      )}
-
       {embedUrl ? (
         <>
           <div className="flex-1 min-h-0 rounded-xl overflow-hidden mb-3" style={{ minHeight: '280px' }}>
@@ -137,6 +111,31 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
               style={{ minHeight: '280px' }}
             />
           </div>
+
+          {/* Spotify connection status — below iframe, above URL input */}
+          {spotify.isConnected ? (
+            <div className="flex items-center justify-between mb-2">
+              <span className="flex items-center gap-1 text-xs text-[#1DB954]">
+                <span className="w-2 h-2 rounded-full bg-[#1DB954]" />
+                Connected — voice control enabled
+              </span>
+              <button
+                onClick={spotify.disconnect}
+                className="text-xs text-on-surface-variant/40 hover:text-error cursor-pointer"
+              >
+                Disconnect
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={spotify.connect}
+              className="flex items-center gap-2 px-3 py-1.5 mb-2 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-sm">link</span>
+              Connect for voice control
+            </button>
+          )}
+
           <div className="flex gap-2 shrink-0">
             <input
               type="text"
