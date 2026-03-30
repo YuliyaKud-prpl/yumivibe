@@ -58,13 +58,15 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   useEffect(() => {
     const unsubscribe = subscribeMedia('spotify', (command) => {
       if (spotify.isConnected && spotify.isReady) {
-        // Use Web API for full control
-        if (command === 'play') spotify.play();
+        if (command === 'play') {
+          // Play current playlist if one is loaded
+          const uri = urlInput ? toSpotifyUri(urlInput) : undefined;
+          spotify.play(uri ?? undefined);
+        }
         else if (command === 'pause') spotify.pause();
         else if (command === 'next') spotify.next();
         else if (command === 'previous') spotify.previous();
       } else {
-        // Fallback: embed postMessage (play/pause only)
         if (command !== 'play' && command !== 'pause') return;
         const iframe = iframeRef.current;
         if (!iframe?.contentWindow) return;
@@ -75,7 +77,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
       }
     });
     return unsubscribe;
-  }, [spotify]);
+  }, [spotify, urlInput]);
 
   const loadEmbed = useCallback((url?: string) => {
     const trimmed = (url ?? urlInput).trim();

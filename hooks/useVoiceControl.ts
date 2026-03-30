@@ -62,15 +62,16 @@ function parseCommand(transcript: string): ParsedCommand | null {
       target: 'youtube', command: 'mute', label: 'Mute video' },
     { patterns: [/\bunmute\s+(video|youtube)\b/, /\bunmute\b/, /\bsound\s+on\b/],
       target: 'youtube', command: 'unmute', label: 'Unmute video' },
-    // Simple commands — control both
+    // Simple play/pause — control both
     { patterns: [/\bpause\b/, /\bstop\b/],
       target: 'all', command: 'pause', label: 'Pause' },
     { patterns: [/\bplay\b/, /\bresume\b/],
       target: 'all', command: 'play', label: 'Play' },
+    // Simple next/previous — YouTube only (Spotify needs explicit "next song")
     { patterns: [/\bnext\b/],
-      target: 'all', command: 'next', label: 'Next' },
+      target: 'youtube', command: 'next', label: 'Next video' },
     { patterns: [/\b(previous|prev|back)\b/],
-      target: 'all', command: 'previous', label: 'Previous' },
+      target: 'youtube', command: 'previous', label: 'Previous video' },
   ];
 
   for (const cmd of commands) {
