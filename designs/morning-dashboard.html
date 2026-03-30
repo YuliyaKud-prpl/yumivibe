@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Morning Vibes Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-container": "#ffdad6",
+                        "primary-container": "#8c5a3c",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#34302a",
+                        "on-secondary-fixed": "#1a1e03",
+                        "tertiary-fixed": "#ffdcc4",
+                        "surface-container-highest": "#e9e1d8",
+                        "secondary": "#5c613e",
+                        "outline-variant": "#d6c3b9",
+                        "on-surface-variant": "#51443d",
+                        "secondary-container": "#dfe3b6",
+                        "primary": "#704327",
+                        "on-secondary-fixed-variant": "#454928",
+                        "on-primary-fixed-variant": "#683c20",
+                        "tertiary-fixed-dim": "#e2c0a9",
+                        "primary-fixed": "#ffdbc9",
+                        "surface": "#fff8f2",
+                        "on-tertiary-fixed-variant": "#594230",
+                        "on-primary-fixed": "#321200",
+                        "on-tertiary-container": "#ffdfca",
+                        "surface-bright": "#fff8f2",
+                        "surface-container": "#f5ede3",
+                        "on-surface": "#1e1b16",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#f9b894",
+                        "tertiary-container": "#7b614e",
+                        "primary-fixed-dim": "#f9b894",
+                        "tertiary": "#614937",
+                        "on-secondary-container": "#616641",
+                        "surface-container-high": "#efe7dd",
+                        "on-primary-container": "#ffdecd",
+                        "secondary-fixed-dim": "#c5ca9e",
+                        "inverse-on-surface": "#f8efe6",
+                        "surface-tint": "#835335",
+                        "surface-variant": "#e9e1d8",
+                        "outline": "#84746c",
+                        "background": "#fff8f2",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#e1e6b9",
+                        "on-tertiary-fixed": "#291709",
+                        "on-background": "#1e1b16",
+                        "surface-container-low": "#fbf2e9",
+                        "surface-dim": "#e1d9d0",
+                        "error": "#ba1a1a"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans"],
+                        "body": ["Plus Jakarta Sans"],
+                        "label": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.75rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen">
+<!-- TopAppBar (Full Width) -->
+<header class="bg-white/60 dark:bg-stone-900/60 backdrop-blur-md sticky top-0 z-50 shadow-[0_20px_40px_rgba(112,67,39,0.06)] px-6 py-4 flex justify-between items-center w-full">
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-[#FBF2E9] transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<span class="text-[#4B2E2B] dark:text-[#FBF2E9] font-bold text-xl tracking-tight cursor-text" contenteditable="true">Morning Vibes</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-[#FBF2E9] dark:hover:bg-stone-800 text-on-surface-variant transition-colors" title="Background Picker">
+<span class="material-symbols-outlined" data-icon="palette">palette</span>
+</button>
+<button class="p-2 rounded-full hover:bg-[#FBF2E9] dark:hover:bg-stone-800 text-on-surface-variant transition-colors" title="Theme Toggle">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+<button class="p-2 rounded-full hover:bg-[#FBF2E9] dark:hover:bg-stone-800 text-on-surface-variant transition-colors" title="Voice Search">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+</button>
+</div>
+<button class="bg-[#8C5A3C] hover:bg-[#704327] text-white px-5 py-2.5 rounded-full font-bold text-sm shadow-md transition-all active:scale-95 ml-2">
+                Add Block
+            </button>
+</div>
+</header>
+<!-- Main Canvas (Full Width & Centered Content) -->
+<main class="p-6 md:p-12 max-w-7xl mx-auto w-full">
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-min">
+<!-- 1. Greeting Block -->
+<div class="md:col-span-8 bg-gradient-to-br from-[#F3E4C9] to-[#BFA28C] rounded-2xl p-8 flex flex-col justify-end min-h-[280px] relative group shadow-[0_20px_40px_rgba(112,67,39,0.06)] overflow-hidden">
+<div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-white/50 cursor-grab" data-icon="drag_indicator">drag_indicator</span>
+<span class="material-symbols-outlined text-white/50 cursor-pointer hover:text-white" data-icon="close">close</span>
+</div>
+<div class="flex items-center gap-4">
+<h2 class="text-4xl md:text-5xl font-extrabold text-[#4B2E2B] leading-tight">Good morning, sunshine! ☀️</h2>
+</div>
+<p class="text-[#4B2E2B]/70 mt-4 font-medium max-w-md">Your intentional space for focus and clarity. Today is a fresh page.</p>
+<div class="absolute -bottom-10 -right-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+</div>
+<!-- 2. Clock Block -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-2xl p-8 flex flex-col items-center justify-center text-center group shadow-[0_20px_40px_rgba(112,67,39,0.06)] relative border border-[#d6c3b9]/10">
+<div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-on-surface-variant/30 cursor-grab" data-icon="drag_indicator">drag_indicator</span>
+<span class="material-symbols-outlined text-on-surface-variant/30 cursor-pointer" data-icon="close">close</span>
+</div>
+<h3 class="text-6xl font-black text-[#4B2E2B] tracking-tighter">8:15 AM</h3>
+<p class="text-on-surface-variant font-bold mt-2 uppercase tracking-widest text-sm">Tuesday, March 30</p>
+</div>
+<!-- 3. Weather Block -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-2xl p-8 group shadow-[0_20px_40px_rgba(112,67,39,0.06)] relative border border-[#d6c3b9]/10 flex flex-col">
+<div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-on-surface-variant/30 cursor-grab" data-icon="drag_indicator">drag_indicator</span>
+<span class="material-symbols-outlined text-on-surface-variant/30 cursor-pointer" data-icon="close">close</span>
+</div>
+<div class="flex items-start justify-between">
+<div>
+<p class="label-md font-bold text-on-surface-variant tracking-widest uppercase mb-1">Kyiv</p>
+<h4 class="text-4xl font-bold text-on-surface">22°C</h4>
+<p class="text-on-surface-variant font-medium">Sunny</p>
+</div>
+<span class="material-symbols-outlined text-amber-500 text-5xl" data-icon="light_mode" style="font-variation-settings: 'FILL' 1;">light_mode</span>
+</div>
+<div class="mt-auto pt-8">
+<button class="w-full bg-[#BABF94] hover:bg-[#a6ab83] text-white py-3 rounded-xl font-bold transition-all active:scale-[0.98]">
+                        What to wear?
+                    </button>
+</div>
+</div>
+<!-- 4. Quotes Block -->
+<div class="md:col-span-4 bg-surface-container-low rounded-2xl p-8 flex flex-col justify-center relative group shadow-[0_20px_40px_rgba(112,67,39,0.06)]">
+<div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-on-surface-variant/30 cursor-grab" data-icon="drag_indicator">drag_indicator</span>
+<span class="material-symbols-outlined text-on-surface-variant/30 cursor-pointer" data-icon="close">close</span>
+</div>
+<span class="material-symbols-outlined text-[#8C5A3C] opacity-20 text-4xl mb-4" data-icon="format_quote">format_quote</span>
+<p class="text-xl font-medium text-on-surface italic leading-relaxed">
+                    "The sun himself is weak when he first rises, and gathers strength and courage as the day gets on."
+                </p>
+<p class="mt-4 text-sm font-bold text-[#8C5A3C] uppercase tracking-widest">— Charles Dickens</p>
+</div>
+<!-- 5. Todos Block -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-2xl p-8 group shadow-[0_20px_40px_rgba(112,67,39,0.06)] relative border border-[#d6c3b9]/10">
+<div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-on-surface-variant/30 cursor-grab" data-icon="drag_indicator">drag_indicator</span>
+<span class="material-symbols-outlined text-on-surface-variant/30 cursor-pointer" data-icon="close">close</span>
+</div>
+<h4 class="font-bold text-lg mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-[#8C5A3C]" data-icon="checklist">checklist</span>
+                    Morning Rituals
+                </h4>
+<ul class="space-y-4">
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 rounded bg-[#BABF94] flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</div>
+<span class="text-on-surface-variant line-through opacity-60">Morning yoga</span>
+</li>
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 rounded bg-[#BABF94] flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</div>
+<span class="text-on-surface-variant line-through opacity-60">Make breakfast</span>
+</li>
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 rounded border-2 border-outline-variant"></div>
+<span class="text-on-surface font-medium">Read 20 pages</span>
+</li>
+<li class="flex items-center gap-3">
+<div class="w-6 h-6 rounded border-2 border-outline-variant"></div>
+<span class="text-on-surface font-medium">Water plants</span>
+</li>
+</ul>
+</div>
+<!-- 6. Pomodoro Block -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-2xl p-8 group shadow-[0_20px_40px_rgba(112,67,39,0.06)] relative border border-[#d6c3b9]/10 flex flex-col items-center">
+<div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-on-surface-variant/30 cursor-grab" data-icon="drag_indicator">drag_indicator</span>
+<span class="material-symbols-outlined text-on-surface-variant/30 cursor-pointer" data-icon="close">close</span>
+</div>
+<div class="relative w-48 h-48 flex items-center justify-center">
+<!-- Progress Ring -->
+<svg class="w-full h-full -rotate-90">
+<circle class="text-surface-container" cx="96" cy="96" fill="transparent" r="88" stroke="currentColor" stroke-width="12"></circle>
+<circle cx="96" cy="96" fill="transparent" r="88" stroke="#BABF94" stroke-dasharray="552.92" stroke-dashoffset="138" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-4xl font-black text-on-surface">25:00</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mt-1">Focus Session</span>
+</div>
+</div>
+<div class="flex items-center gap-6 mt-8">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-3xl" data-icon="replay">replay</span>
+</button>
+<button class="w-14 h-14 bg-[#BABF94] rounded-full text-white flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all">
+<span class="material-symbols-outlined text-4xl" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-3xl" data-icon="skip_next">skip_next</span>
+</button>
+</div>
+</div>
+<!-- 7. Morning Journal Block -->
+<div class="md:col-span-8 bg-surface-container-high rounded-2xl p-8 shadow-[0_20px_40px_rgba(112,67,39,0.06)] relative overflow-hidden group">
+<div class="flex items-center gap-8 h-full">
+<div class="flex-1">
+<h4 class="text-2xl font-bold text-on-surface mb-2">Morning Journal</h4>
+<p class="text-on-surface-variant mb-6">Take 5 minutes to write down three things you are grateful for today.</p>
+<button class="border-2 border-primary text-primary px-6 py-2 rounded-full font-bold hover:bg-primary hover:text-white transition-all">Start Writing</button>
+</div>
+<div class="hidden lg:block w-40 h-40 rounded-2xl overflow-hidden shadow-xl rotate-3">
+<img class="w-full h-full object-cover" data-alt="aesthetic journal on a wooden table with dried flowers and soft sunlight" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhW6QrK9Ud_3SeJGjlj1nSWDP37P0WcmVsBDfNugpfgfNCYaMmqTEEycvVZrTd3V8i5K0mfwAPxyvkBzlZWU2nOeFrmxthhX-7GxE7vT7kmGexH5tqW3Jv7ziSLJ_eavp38zydg2gDwnt77mfF-wlFWMGX6PVo8U1EpIHUxoxfErOwK3wzDXZgPrutNLZc3v2GbcGaZT2QmKfPqnotxXywtLdIjbg1YsS8N7qQnob8vRz9MlvShVjVTZLj4MtjL_jmwW2W2ijXqQ"/>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Bottom Navigation (Preserved for Mobile, Sidebar removed for Desktop) -->
+<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t-0 flex justify-around items-center py-4 px-6 z-50">
+<a class="flex flex-col items-center gap-1 text-[#704327]" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Dash</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant opacity-50" href="#">
+<span class="material-symbols-outlined" data-icon="edit_note">edit_note</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Note</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant opacity-50" href="#">
+<span class="material-symbols-outlined" data-icon="wb_sunny">wb_sunny</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Focus</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant opacity-50" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="text-[10px] font-bold uppercase tracking-widest">Set</span>
+</a>
+</nav>
+</body></html>

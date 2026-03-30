@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chill &amp; Music Dashboard</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-surface": "#30312c",
+              "tertiary-fixed-dim": "#ffb952",
+              "on-background": "#1b1c17",
+              "on-primary-fixed": "#002203",
+              "primary-fixed": "#a3f69a",
+              "primary-fixed-dim": "#88d981",
+              "on-error": "#ffffff",
+              "surface-container-low": "#f5f4ec",
+              "surface-tint": "#1d6d22",
+              "on-tertiary-fixed-variant": "#633f00",
+              "on-error-container": "#93000a",
+              "background": "#fbf9f1",
+              "on-primary-fixed-variant": "#00530f",
+              "surface-container-lowest": "#ffffff",
+              "outline": "#707a6c",
+              "tertiary": "#694300",
+              "outline-variant": "#c0cab9",
+              "error": "#ba1a1a",
+              "on-secondary-fixed-variant": "#005228",
+              "on-tertiary-container": "#ffdaac",
+              "primary": "#005911",
+              "on-tertiary-fixed": "#291800",
+              "error-container": "#ffdad6",
+              "on-secondary": "#ffffff",
+              "surface-container-highest": "#e4e3db",
+              "inverse-primary": "#88d981",
+              "surface-dim": "#dcdad2",
+              "surface": "#fbf9f1",
+              "tertiary-container": "#895900",
+              "primary-container": "#237227",
+              "surface-container": "#f0eee6",
+              "secondary-fixed-dim": "#8cd79e",
+              "surface-container-high": "#eae8e0",
+              "on-surface-variant": "#40493d",
+              "secondary-fixed": "#a7f4b8",
+              "secondary": "#206b3c",
+              "on-surface": "#1b1c17",
+              "surface-variant": "#e4e3db",
+              "secondary-container": "#a7f4b8",
+              "surface-bright": "#fbf9f1",
+              "on-tertiary": "#ffffff",
+              "on-primary": "#ffffff",
+              "tertiary-fixed": "#ffddb4",
+              "on-primary-container": "#a2f498",
+              "inverse-on-surface": "#f3f1e9",
+              "on-secondary-fixed": "#00210c",
+              "on-secondary-container": "#277242"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Plus Jakarta Sans"],
+              "label": ["Plus Jakarta Sans"]
+            },
+            borderRadius: {"DEFAULT": "0.75rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fbf9f1; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .block-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .block-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0, 83, 15, 0.08); }
+        .glass-player { background: rgba(27, 28, 23, 0.9); backdrop-filter: blur(20px); }
+    </style>
+</head>
+<body class="text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4 bg-white dark:bg-[#1b1c17] shadow-[0_12px_32px_rgba(0,83,15,0.08)]">
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-[#f5f4ec] transition-colors">
+<span class="material-symbols-outlined text-[#40493d]">arrow_back</span>
+</button>
+<h1 class="text-xl font-extrabold tracking-tight text-[#237227] dark:text-[#FFAA00] outline-none" contenteditable="true">Chill &amp; Music</h1>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-1 bg-[#f5f4ec] dark:bg-primary/10 rounded-full p-1">
+<button class="p-2 rounded-full hover:bg-white dark:hover:bg-primary/20 transition-all text-[#40493d]">
+<span class="material-symbols-outlined" data-icon="palette">palette</span>
+</button>
+<button class="p-2 rounded-full hover:bg-white dark:hover:bg-primary/20 transition-all text-[#40493d]">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+<button class="p-2 rounded-full hover:bg-white dark:hover:bg-primary/20 transition-all text-[#40493d]">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+</button>
+</div>
+<button class="bg-[#237227] text-white px-5 py-2 rounded-full font-bold text-sm tracking-wide shadow-lg hover:scale-95 transition-transform duration-200">
+            Add Block
+        </button>
+</div>
+</header>
+<main class="pt-24 pb-12 px-6 w-full max-w-full mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-min">
+<!-- 1. GREETING: High-impact editorial card -->
+<section class="md:col-span-2 lg:col-span-2 block-card bg-gradient-to-br from-[#206b3c] to-[#FFAA00] rounded-xl p-8 flex flex-col justify-between min-h-[220px] relative overflow-hidden">
+<div class="z-10">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-white/50 cursor-grab" data-icon="drag_indicator">drag_indicator</span>
+<button class="text-white/70 hover:text-white"><span class="material-symbols-outlined">close</span></button>
+</div>
+<h2 class="text-4xl font-extrabold text-white leading-tight tracking-tighter">Good evening,<br/>relax time! ✨</h2>
+</div>
+<div class="z-10 flex gap-2 mt-4">
+<span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold text-white tracking-widest uppercase">Editorial</span>
+<span class="px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold text-white tracking-widest uppercase">Focus</span>
+</div>
+<!-- Abstract decorative element -->
+<div class="absolute -right-12 -bottom-12 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+</section>
+<!-- 4. WEATHER: Soft gold tint -->
+<section class="block-card bg-[#FFD786]/20 border border-[#FFD786]/30 rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-[#694300]/40" data-icon="drag_indicator">drag_indicator</span>
+<button class="text-[#694300]/40 hover:text-[#694300]"><span class="material-symbols-outlined">close</span></button>
+</div>
+<div class="py-4">
+<div class="flex items-center gap-3 text-[#694300]">
+<span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">dark_mode</span>
+<span class="text-4xl font-bold tracking-tighter">18°C</span>
+</div>
+<p class="text-[#694300]/70 font-medium mt-1">Clear Night in Kyiv</p>
+</div>
+<div class="text-[10px] font-bold uppercase tracking-widest text-[#694300]/50">Updated 5m ago</div>
+</section>
+<!-- 6. CLOCK: Deep forest text -->
+<section class="block-card bg-surface-container-lowest rounded-xl p-6 flex flex-col items-center justify-center text-center relative">
+<div class="w-full flex justify-between items-start absolute top-4 px-4">
+<span class="material-symbols-outlined text-outline-variant/40" data-icon="drag_indicator">drag_indicator</span>
+<button class="text-outline-variant/40 hover:text-on-surface"><span class="material-symbols-outlined">close</span></button>
+</div>
+<div class="mt-4">
+<div class="text-4xl font-black text-[#237227] tracking-tighter">9:45 PM</div>
+<div class="text-[#206b3c] font-bold text-sm tracking-wide mt-1 uppercase">Friday Night</div>
+</div>
+</section>
+<!-- 2. YOUTUBE: Elegant dark aesthetic -->
+<section class="md:col-span-2 lg:col-span-2 block-card glass-player rounded-xl p-6 min-h-[300px] flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white/50" data-icon="drag_indicator">drag_indicator</span>
+<span class="text-white/60 text-[10px] font-bold tracking-widest uppercase">YouTube Video</span>
+</div>
+<button class="text-white/40 hover:text-white transition-colors"><span class="material-symbols-outlined">close</span></button>
+</div>
+<div class="flex-grow flex items-center justify-center border-2 border-dashed border-white/10 rounded-xl group hover:border-white/20 transition-colors cursor-pointer mb-6 relative overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover opacity-40 grayscale group-hover:scale-105 transition-transform duration-500" data-alt="cinematic shot of misty forest trees at night with glowing ethereal lights and moody atmospheric fog" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqAY2PePm3tq4thf1LCJdyhoOWV5ZT7WUU7Q1CsVJUJmXG5cb18DIQAnDwHQzcg3LP5Tqq_-1yeLP_aBqupBYt-4OP3koSGSx0wcOliLA_b-Q4HIi29gSn2sQp_k5ctzmV4UBTBX7Vg2PRj4Z4Z7B6Fm63tLtytv_z3YrEViTidWT4v3I79YthQl3Ty_Xi_rntts1hiLBSOGRwwt1xKX0bSAIHB-HvKfnEAl42FtHb2-gNlhZgqXnso1un8TsB7ujXSq9skVLgoA"/>
+<div class="z-10 bg-white/10 backdrop-blur-xl p-5 rounded-full text-white scale-110 shadow-2xl group-hover:scale-125 transition-transform">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="relative">
+<input class="w-full bg-white/5 border-none text-white text-sm rounded-lg py-3 px-4 focus:ring-1 focus:ring-primary-fixed/50 placeholder:text-white/20" placeholder="Paste YouTube URL..." type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-2.5 text-white/30 text-xl">link</span>
+</div>
+</section>
+<!-- 3. SPOTIFY: Integrated player vibe -->
+<section class="md:col-span-2 lg:col-span-2 block-card glass-player rounded-xl p-6 flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-white/50" data-icon="drag_indicator">drag_indicator</span>
+<span class="text-white/60 text-[10px] font-bold tracking-widest uppercase">Spotify Player</span>
+</div>
+<button class="text-white/40 hover:text-white transition-colors"><span class="material-symbols-outlined">close</span></button>
+</div>
+<div class="flex gap-6 mb-6 items-center">
+<div class="w-24 h-24 rounded-lg bg-surface-container-highest flex-shrink-0 overflow-hidden shadow-2xl">
+<img class="w-full h-full object-cover" data-alt="album cover aesthetic with abstract paint swirls in deep forest green and golden amber colors" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKiM-6wm0QR0u-nSUi96UlsF1XVnsboqTcxsZH3sUsh5ZiAn-zgtDngYszPc6l0t7DFBb42b_vRxsRpQ8ZVpFD2gyuxMCzie9GWSa-U6vFTBUvY6cIrb8sabKlkJFAC3jqKpB-H_V_YqAJGihT-aME9OX-4jo_s2yf_1vwULe2AQzXskBo_z5G5lKb0dKN7kjUZmSjYKR1KYgi6A8HJYqNQfHrCNMAbmPZ_h6W0mPtm3Nuw-j_1f1uaG0vh_Mhr3tslhp-KgAy6g"/>
+</div>
+<div class="flex-grow">
+<h3 class="text-white font-bold text-lg leading-tight">Midnight Jazz Resonance</h3>
+<p class="text-white/50 text-sm">The Evening Collective</p>
+<div class="mt-4 flex items-center gap-4">
+<span class="material-symbols-outlined text-white/70 hover:text-white cursor-pointer">shuffle</span>
+<span class="material-symbols-outlined text-white/70 hover:text-white cursor-pointer">skip_previous</span>
+<span class="material-symbols-outlined text-white text-3xl cursor-pointer" style="font-variation-settings: 'FILL' 1;">pause_circle</span>
+<span class="material-symbols-outlined text-white/70 hover:text-white cursor-pointer">skip_next</span>
+<span class="material-symbols-outlined text-white/70 hover:text-white cursor-pointer">repeat</span>
+</div>
+</div>
+</div>
+<div class="w-full bg-white/10 h-1.5 rounded-full overflow-hidden mb-6">
+<div class="bg-[#206b3c] h-full w-2/3 shadow-[0_0_10px_rgba(32,107,60,0.5)]"></div>
+</div>
+<div class="relative">
+<input class="w-full bg-white/5 border-none text-white text-sm rounded-lg py-3 px-4 focus:ring-1 focus:ring-primary-fixed/50 placeholder:text-white/20" placeholder="Paste Spotify URL..." type="text"/>
+</div>
+</section>
+<!-- 5. QUOTES: Italic editorial style -->
+<section class="block-card bg-[#FFF8E8] border border-[#FFD786]/20 rounded-xl p-6 flex flex-col justify-center text-center italic relative">
+<div class="w-full flex justify-between items-start absolute top-4 px-4">
+<span class="material-symbols-outlined text-[#694300]/20" data-icon="drag_indicator">drag_indicator</span>
+<button class="text-[#694300]/20 hover:text-[#694300]"><span class="material-symbols-outlined">close</span></button>
+</div>
+<p class="text-[#694300] text-lg font-medium leading-relaxed mt-4">
+                "Music gives a soul to the universe, wings to the mind, flight to the imagination and life to everything."
+            </p>
+<cite class="text-[#694300]/60 text-xs mt-4 font-bold tracking-widest not-italic uppercase">— Plato</cite>
+</section>
+<!-- 7. NOTES: List aesthetic -->
+<section class="block-card bg-white rounded-xl p-6 shadow-sm flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-outline-variant/40" data-icon="drag_indicator">drag_indicator</span>
+<h3 class="font-bold text-[#237227]">Playlist Ideas</h3>
+</div>
+<button class="text-outline-variant/40 hover:text-on-surface"><span class="material-symbols-outlined">close</span></button>
+</div>
+<ul class="space-y-3">
+<li class="flex items-start gap-3 group">
+<div class="w-1.5 h-1.5 rounded-full bg-[#FFAA00] mt-2 group-hover:scale-150 transition-transform"></div>
+<p class="text-on-surface-variant text-sm leading-tight">Lo-fi beats for coding session</p>
+</li>
+<li class="flex items-start gap-3 group">
+<div class="w-1.5 h-1.5 rounded-full bg-[#FFAA00] mt-2 group-hover:scale-150 transition-transform"></div>
+<p class="text-on-surface-variant text-sm leading-tight">Smooth Jazz for dinner prep</p>
+</li>
+<li class="flex items-start gap-3 group">
+<div class="w-1.5 h-1.5 rounded-full bg-[#FFAA00] mt-2 group-hover:scale-150 transition-transform"></div>
+<p class="text-on-surface-variant text-sm leading-tight">Indie folk for Sunday morning</p>
+</li>
+</ul>
+</section>
+</div>
+</main>
+</body></html>

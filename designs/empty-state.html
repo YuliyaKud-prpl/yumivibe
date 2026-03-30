@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Welcome to YumiVibe</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "on-surface-variant": "#434840",
+                "on-error-container": "#93000a",
+                "tertiary": "#55624f",
+                "surface-tint": "#52634f",
+                "on-primary": "#ffffff",
+                "secondary-fixed": "#dde7c0",
+                "secondary-container": "#dde7c0",
+                "inverse-on-surface": "#f0f2df",
+                "outline-variant": "#c3c8be",
+                "on-tertiary-fixed": "#131f0f",
+                "tertiary-container": "#aab9a2",
+                "secondary-fixed-dim": "#c1cba6",
+                "on-primary-fixed-variant": "#3b4b39",
+                "on-error": "#ffffff",
+                "inverse-primary": "#baccb4",
+                "surface-dim": "#d9dcc9",
+                "surface": "#f9fbe8",
+                "on-tertiary-fixed-variant": "#3d4a38",
+                "background": "#f9fbe8",
+                "error": "#ba1a1a",
+                "on-primary-container": "#3b4a38",
+                "primary-fixed-dim": "#baccb4",
+                "primary-container": "#a8b9a3",
+                "secondary": "#596244",
+                "on-secondary": "#ffffff",
+                "surface-container-low": "#f3f5e2",
+                "tertiary-fixed-dim": "#bccbb3",
+                "surface-container-highest": "#e2e4d1",
+                "on-secondary-container": "#5f6849",
+                "on-background": "#1a1d11",
+                "outline": "#747970",
+                "error-container": "#ffdad6",
+                "on-secondary-fixed": "#171e06",
+                "tertiary-fixed": "#d8e7cf",
+                "surface-container-high": "#e8ead7",
+                "inverse-surface": "#2f3225",
+                "primary": "#52634f",
+                "primary-fixed": "#d5e8cf",
+                "on-tertiary-container": "#3d4a38",
+                "on-secondary-fixed-variant": "#414a2e",
+                "on-tertiary": "#ffffff",
+                "surface-container": "#edefdd",
+                "surface-bright": "#f9fbe8",
+                "surface-variant": "#e2e4d1",
+                "on-primary-fixed": "#111f10",
+                "surface-container-lowest": "#ffffff",
+                "on-surface": "#1a1d11"
+              },
+              fontFamily: {
+                "headline": ["Plus Jakarta Sans"],
+                "body": ["Plus Jakarta Sans"],
+                "label": ["Plus Jakarta Sans"]
+              },
+              borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .organic-blob {
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-[#F1F3E0] text-on-surface selection:bg-primary-container min-h-screen flex flex-col overflow-x-hidden">
+<!-- Top Navigation Anchor -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-[#FFFFFF] dark:bg-[#1A1D11] shadow-[0_4px_24px_rgba(82,99,79,0.05)] shadow-sm dark:shadow-none">
+<div class="flex justify-between items-center w-full px-8 py-4 max-w-7xl mx-auto">
+<div class="text-2xl font-bold text-[#52634F] dark:text-[#F9FBE8] flex items-center gap-2 font-['Plus_Jakarta_Sans'] tracking-tight">
+                YumiVibe
+            </div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-[#F9FBE8] dark:hover:bg-[#52634F]/20 rounded-full transition-all duration-300 scale-95 active:scale-90 text-[#52634F] dark:text-[#DDE7C0]">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+</div>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center pt-24 pb-24 px-6 w-full">
+<!-- Abstract Modern Hero Section -->
+<div class="relative w-full max-w-4xl flex flex-col items-center text-center">
+<!-- Simple Modern Shape -->
+<div class="organic-blob w-64 h-64 md:w-80 md:h-80 bg-[#D2DCB6] flex items-center justify-center relative mb-12 shadow-[0_20px_50px_rgba(82,99,79,0.1)]">
+<span class="material-symbols-outlined text-7xl md:text-8xl text-[#778873] opacity-80" data-icon="dashboard">dashboard</span>
+<!-- Floating Elements -->
+<div class="absolute -top-4 -right-4 w-16 h-16 bg-[#A1BC98] rounded-full flex items-center justify-center text-white shadow-lg animate-bounce-slow">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div class="absolute bottom-4 -left-8 w-14 h-14 bg-[#778873] rounded-full flex items-center justify-center text-white shadow-lg">
+<span class="material-symbols-outlined" data-icon="layers">layers</span>
+</div>
+</div>
+<!-- Typography & Headers -->
+<div class="space-y-4 mb-16">
+<h1 class="text-4xl md:text-5xl font-extrabold text-[#3D4A38] tracking-tight leading-tight">
+                    Create Your First Dashboard
+                </h1>
+<p class="text-lg md:text-xl text-[#8A9682] max-w-lg mx-auto font-medium">
+                    Start with a template or build from scratch. Your digital sanctuary begins here.
+                </p>
+</div>
+<!-- Template Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl mb-16">
+<!-- Morning Vibes -->
+<button class="group flex flex-col items-center p-6 bg-surface-container-lowest rounded-[12px] shadow-[0_12px_30px_-10px_rgba(82,99,79,0.15)] hover:shadow-[0_15px_35px_-8px_rgba(82,99,79,0.25)] transition-all duration-300 transform hover:-translate-y-2">
+<div class="w-full aspect-[4/3] rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-[#f59e0b]/20 to-[#fbbf24]/20 relative overflow-hidden">
+<img alt="Sunrise landscape" class="absolute inset-0 w-full h-auto object-cover opacity-60 mix-blend-overlay" data-alt="Soft morning sunrise over a tranquil green field with golden light filtering through morning mist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPVsw8lVSIA7JrSVhE-9aWtcVQpleiE4lWkFU4fgDv6dzY6HnFHJLqhiShRRspKnl4srLCGU9zzoY1_AfWkQM5luQqOnXgfwCfY7tue6ZKRp7x9RjJhjd-tWwP-qVGMXkEoShLdpYlptOM9vRvG2cJ6OZSIYZJD-lZLQsG2LZ3-BtMXY9mFIjQ9ViBJpUqQROmif746e2lukkh5Oooc-AL97Ct3scNjG8PZ-jE4oSTxqDBX1vPe6Evss8kDN9yjgWHgb_jZ-7g-Q"/>
+<span class="material-symbols-outlined text-5xl text-[#52634F] relative z-10" data-icon="wb_sunny">wb_sunny</span>
+</div>
+<span class="text-lg font-bold text-on-surface mb-1">Morning Vibes</span>
+<span class="text-sm text-on-surface-variant/70">Daily ritual tracker</span>
+</button>
+<!-- Work Focus -->
+<button class="group flex flex-col items-center p-6 bg-surface-container-lowest rounded-[12px] shadow-[0_12px_30px_-10px_rgba(82,99,79,0.15)] hover:shadow-[0_15px_35px_-8px_rgba(82,99,79,0.25)] transition-all duration-300 transform hover:-translate-y-2">
+<div class="w-full aspect-[4/3] rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-[#0ea5e9]/20 to-[#38bdf8]/20 relative overflow-hidden">
+<img alt="Minimal workspace" class="absolute inset-0 w-full h-auto object-cover opacity-60 mix-blend-overlay" data-alt="Clean minimalist modern office desk with a single green plant and soft natural window light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkRI1ecACqQrVrGlr8M0Cn2vyTtHI_0TrC2JlbEtMKD05ocrNKv-qgXpaR03pdSP0fxuSMxbp2fygqw6kpZXcK5fj0se5VZNZkVguOU2s8DO07AH6moW5TZsPpZRAyCYlAOdiJNulwhFHVOe5zNI9OXtDK6lpPJHofDHEjpU8Qbo4qVUTQQmFPNYH4XWLIBK6CoeQYFb_PdfzM8LIKBq3waiuzt25Tv_7FsdGwzVauviPMmOy64Pt1ixm4Kf2g7ZPYfSmWcfxBZw"/>
+<span class="material-symbols-outlined text-5xl text-[#52634F] relative z-10" data-icon="work">work</span>
+</div>
+<span class="text-lg font-bold text-on-surface mb-1">Work Focus</span>
+<span class="text-sm text-on-surface-variant/70">Deep work timer &amp; tasks</span>
+</button>
+<!-- Chill & Music -->
+<button class="group flex flex-col items-center p-6 bg-surface-container-lowest rounded-[12px] shadow-[0_12px_30px_-10px_rgba(82,99,79,0.15)] hover:shadow-[0_15px_35px_-8px_rgba(82,99,79,0.25)] transition-all duration-300 transform hover:-translate-y-2">
+<div class="w-full aspect-[4/3] rounded-lg mb-4 flex items-center justify-center bg-gradient-to-br from-[#10b981]/20 to-[#facc15]/20 relative overflow-hidden">
+<img alt="Cozy home environment" class="absolute inset-0 w-full h-auto object-cover opacity-60 mix-blend-overlay" data-alt="Warm indoor lighting in a cozy living room with soft textiles and a gramophone player" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC80NmKflUotPBrgMs2RJXKzG6lEU3Y-TFtA7y6CVnZlRbiwTa9pO2I2rRp5QlqD8Hkt9hKYWSIbIRpgMQ9ug1g_iobiwP7D4z5-Y5VOsR7hPYE-JC3bKa5gIofCo0PE4LFsTsky5gWUPfC5uPwr2kow3Ctwobcmn-2FjkfT8v4yAinRvsRidqfp386NQ23rgADhIFLDURaOfOV0_I_6ytR_MgROO35-C4gqALem3D87Upbt3O4-h2E9__w_Jf_NNUlUgAxW2THuA"/>
+<span class="material-symbols-outlined text-5xl text-[#52634F] relative z-10" data-icon="library_music">library_music</span>
+</div>
+<span class="text-lg font-bold text-on-surface mb-1">Chill &amp; Music</span>
+<span class="text-sm text-on-surface-variant/70">Ambient soundscape</span>
+</button>
+</div>
+<!-- Primary Action -->
+<button class="group flex items-center gap-3 bg-[#778873] hover:bg-[#52634F] text-white px-10 py-5 rounded-full text-xl font-bold transition-all duration-300 shadow-xl shadow-[#778873]/20 hover:shadow-[#52634F]/40 hover:scale-105 active:scale-95">
+<span class="material-symbols-outlined text-2xl" data-icon="add_circle">add_circle</span>
+                Start from Scratch
+            </button>
+</div>
+</main>
+</body></html>

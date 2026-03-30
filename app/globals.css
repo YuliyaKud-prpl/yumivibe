@@ -1,0 +1,149 @@
+@import "tailwindcss";
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
+@theme {
+  --color-primary: #237227;
+  --color-primary-container: #519A66;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #1a4a1d;
+  --color-secondary: #519A66;
+  --color-secondary-container: #FFD786;
+  --color-on-secondary: #ffffff;
+  --color-on-secondary-container: #5a4010;
+  --color-tertiary: #FFAA00;
+  --color-tertiary-container: #FFD786;
+  --color-surface: #F5FAF0;
+  --color-surface-container: #EAF2E4;
+  --color-surface-container-low: #EFF6EA;
+  --color-surface-container-high: #E0EAD8;
+  --color-surface-container-highest: #D6E2CC;
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-variant: #DEE8D4;
+  --color-surface-dim: #D4DEC8;
+  --color-surface-bright: #F5FAF0;
+  --color-on-surface: #1A1D11;
+  --color-on-surface-variant: #3E4A38;
+  --color-outline: #6B7A62;
+  --color-outline-variant: #B8C6AE;
+  --color-background: #F5FAF0;
+  --color-on-background: #1A1D11;
+  --color-error: #BA1A1A;
+  --color-error-container: #FFDAD6;
+  --color-inverse-surface: #2B3224;
+  --color-inverse-on-surface: #EEF4E6;
+  --color-inverse-primary: #7BC67F;
+  --color-primary-fixed: #C4E8C6;
+  --color-primary-fixed-dim: #519A66;
+  --color-sage-50: #F0F7F0;
+  --color-sage-100: #C4E8C6;
+  --color-sage-200: #519A66;
+  --color-sage-300: #237227;
+  --color-sage-text: #1a4a1d;
+  --color-sage-muted: #6B8A6E;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+html.dark {
+  --color-primary: #7BC67F;
+  --color-primary-container: #1a4a1d;
+  --color-on-primary: #1A1D11;
+  --color-on-primary-container: #C4E8C6;
+  --color-secondary: #A8D4A0;
+  --color-secondary-container: #2E4A20;
+  --color-on-secondary: #1A1D11;
+  --color-on-secondary-container: #C4E8C6;
+  --color-tertiary: #FFAA00;
+  --color-tertiary-container: #5a4010;
+  --color-surface: #1A1D11;
+  --color-surface-container: #252820;
+  --color-surface-container-low: #222518;
+  --color-surface-container-high: #303328;
+  --color-surface-container-highest: #3B3E34;
+  --color-surface-container-lowest: #181B10;
+  --color-surface-variant: #2C3024;
+  --color-surface-dim: #1A1D11;
+  --color-surface-bright: #383B32;
+  --color-on-surface: #E2E8D6;
+  --color-on-surface-variant: #B8C6AE;
+  --color-outline: #84927A;
+  --color-outline-variant: #3E4A38;
+  --color-background: #1A1D11;
+  --color-on-background: #E2E8D6;
+  --color-error: #FFB4AB;
+  --color-error-container: #93000A;
+  --color-inverse-surface: #E2E8D6;
+  --color-inverse-on-surface: #2B3224;
+  --color-inverse-primary: #237227;
+  --color-primary-fixed: #C4E8C6;
+  --color-primary-fixed-dim: #519A66;
+  --color-sage-50: #1A1D11;
+  --color-sage-100: #2C3024;
+  --color-sage-200: #3E4A38;
+  --color-sage-300: #519A66;
+  --color-sage-text: #E2E8D6;
+  --color-sage-muted: #7BC67F;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+}
+
+html.dark .glass-card {
+  background: rgba(26, 29, 17, 0.8);
+}
+
+.organic-bg {
+  background: radial-gradient(circle at 50% 50%, #dde7c0 0%, transparent 70%);
+  opacity: 0.4;
+  filter: blur(60px);
+}
+
+.organic-blob {
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+}
+
+button,
+[role="button"],
+a {
+  cursor: pointer;
+}
+
+/* React Grid Layout resize handle — keep inside block */
+.react-resizable-handle {
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.react-grid-item:hover .react-resizable-handle {
+  opacity: 0.4;
+}
+
+.react-resizable-handle-se {
+  bottom: 4px !important;
+  right: 4px !important;
+  width: 14px !important;
+  height: 14px !important;
+  cursor: se-resize;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body {
+  background-color: var(--color-sage-50);
+  color: var(--color-sage-text);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
