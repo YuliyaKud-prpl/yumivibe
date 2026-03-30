@@ -15,17 +15,29 @@ const SPOTIFY_TOKEN_KEY = 'yumivibe-spotify-token';
 const SPOTIFY_REFRESH_KEY = 'yumivibe-spotify-refresh';
 const SPOTIFY_EXPIRY_KEY = 'yumivibe-spotify-expiry';
 
+export interface SpotifyTrack {
+  name: string;
+  artist: string;
+  album: string;
+  albumArt: string | null;
+  durationMs: number;
+  positionMs: number;
+  isPlaying: boolean;
+}
+
 interface SpotifyContextValue {
   isConnected: boolean;
   isReady: boolean;
   deviceId: string | null;
   accessToken: string | null;
+  currentTrack: SpotifyTrack | null;
   connect: () => void;
   disconnect: () => void;
   play: (uri?: string) => Promise<void>;
   pause: () => Promise<void>;
   next: () => Promise<void>;
   previous: () => Promise<void>;
+  togglePlay: () => Promise<void>;
 }
 
 const SpotifyContext = createContext<SpotifyContextValue | null>(null);
@@ -55,6 +67,7 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [deviceId, setDeviceId] = useState<string | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null);
   const playerRef = useRef<Spotify.Player | null>(null);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -159,6 +172,30 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
         setDeviceId(null);
       });
 
+      player.addListener('player_state_changed', (state) => {
+        if (!state) {
+          setCurrentTrack(null);
+          return;
+        }
+        const s = state as Record<string, unknown>;
+        const trackWindow = s.track_window as Record<string, unknown> | undefined;
+        const current = trackWindow?.current_track as Record<string, unknown> | undefined;
+        if (current) {
+          const artists = current.artists as Array<{ name: string }> | undefined;
+          const album = current.album as Record<string, unknown> | undefined;
+          const images = album?.images as Array<{ url: string }> | undefined;
+          setCurrentTrack({
+            name: (current.name as string) ?? 'Unknown',
+            artist: artists?.map((a) => a.name).join(', ') ?? 'Unknown',
+            album: (album?.name as string) ?? '',
+            albumArt: images?.[0]?.url ?? null,
+            durationMs: (s.duration as number) ?? 0,
+            positionMs: (s.position as number) ?? 0,
+            isPlaying: !(s.paused as boolean),
+          });
+        }
+      });
+
       player.connect();
       playerRef.current = player;
     };
@@ -227,6 +264,14 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
     await spotifyApi('/previous', accessToken, 'POST');
   }, [accessToken]);
 
+  const togglePlay = useCallback(async () => {
+    if (currentTrack?.isPlaying) {
+      await pause();
+    } else {
+      await play();
+    }
+  }, [currentTrack, pause, play]);
+
   return (
     <SpotifyContext.Provider
       value={{
@@ -234,12 +279,14 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
         isReady,
         deviceId,
         accessToken,
+        currentTrack,
         connect,
         disconnect,
         play,
         pause,
         next,
         previous,
+        togglePlay,
       }}
     >
       {children}

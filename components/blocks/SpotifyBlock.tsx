@@ -54,12 +54,10 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const [error, setError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Voice control integration
   useEffect(() => {
     const unsubscribe = subscribeMedia('spotify', (command) => {
       if (spotify.isConnected && spotify.isReady) {
         if (command === 'play') {
-          // Play current playlist if one is loaded
           const uri = urlInput ? toSpotifyUri(urlInput) : undefined;
           spotify.play(uri ?? undefined);
         }
@@ -89,13 +87,100 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     setUrlInput(trimmed);
     onUpdate({ ...block.content, embedUrl: trimmed });
 
-    // If connected via SDK, start playing
     if (spotify.isConnected && spotify.isReady) {
       const uri = toSpotifyUri(trimmed);
       if (uri) spotify.play(uri);
     }
   }, [urlInput, block.content, onUpdate, spotify]);
 
+  // Connected mode — show real player
+  if (spotify.isConnected && spotify.isReady) {
+    const track = spotify.currentTrack;
+    return (
+      <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>
+        {/* Now playing */}
+        <div className="flex-1 flex flex-col items-center justify-center min-h-0">
+          {track ? (
+            <>
+              {track.albumArt && (
+                <img
+                  src={track.albumArt}
+                  alt={track.album}
+                  className="w-32 h-32 rounded-xl shadow-lg mb-4 object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              )}
+              <p className="text-sm font-bold text-on-surface text-center truncate w-full px-2">
+                {track.name}
+              </p>
+              <p className="text-xs text-on-surface-variant text-center truncate w-full px-2">
+                {track.artist}
+              </p>
+
+              {/* Controls */}
+              <div className="flex items-center gap-5 mt-4">
+                <button onClick={spotify.previous} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-xl cursor-pointer transition-colors">
+                  skip_previous
+                </button>
+                <button
+                  onClick={spotify.togglePlay}
+                  className="w-12 h-12 flex items-center justify-center rounded-full text-white cursor-pointer hover:opacity-90 transition-opacity"
+                  style={{ backgroundColor: accent }}
+                >
+                  <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {track.isPlaying ? 'pause' : 'play_arrow'}
+                  </span>
+                </button>
+                <button onClick={spotify.next} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-xl cursor-pointer transition-colors">
+                  skip_next
+                </button>
+              </div>
+            </>
+          ) : (
+            <div className="text-center text-on-surface-variant/50">
+              <span className="material-symbols-outlined text-4xl mb-2 block">headphones</span>
+              <p className="text-sm">Pick a playlist to start</p>
+            </div>
+          )}
+        </div>
+
+        {/* Status + URL input */}
+        <div className="shrink-0 mt-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="flex items-center gap-1 text-xs text-[#1DB954]">
+              <span className="w-2 h-2 rounded-full bg-[#1DB954]" />
+              Connected
+            </span>
+            <button
+              onClick={spotify.disconnect}
+              className="text-xs text-on-surface-variant/40 hover:text-error cursor-pointer"
+            >
+              Disconnect
+            </button>
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && loadEmbed()}
+              placeholder="Paste Spotify URL..."
+              className="flex-1 bg-surface-container-low text-on-surface text-sm rounded-lg py-2 px-3 border border-outline-variant/30 focus:border-primary placeholder:text-on-surface-variant/40 outline-none"
+            />
+            <button
+              onClick={() => loadEmbed()}
+              className="px-3 py-2 rounded-lg text-white text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: accent }}
+            >
+              <span className="material-symbols-outlined text-lg">play_arrow</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Embed mode — not connected
   return (
     <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>
       {error && <p className="text-error text-xs mb-2">{error}</p>}
@@ -114,29 +199,13 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
             />
           </div>
 
-          {/* Spotify connection status — below iframe, above URL input */}
-          {spotify.isConnected ? (
-            <div className="flex items-center justify-between mb-2">
-              <span className="flex items-center gap-1 text-xs text-[#1DB954]">
-                <span className="w-2 h-2 rounded-full bg-[#1DB954]" />
-                Connected — voice control enabled
-              </span>
-              <button
-                onClick={spotify.disconnect}
-                className="text-xs text-on-surface-variant/40 hover:text-error cursor-pointer"
-              >
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={spotify.connect}
-              className="flex items-center gap-2 px-3 py-1.5 mb-2 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-sm">link</span>
-              Connect for voice control
-            </button>
-          )}
+          <button
+            onClick={spotify.connect}
+            className="flex items-center gap-2 px-3 py-1.5 mb-2 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-sm">link</span>
+            Connect for voice control & skip
+          </button>
 
           <div className="flex gap-2 shrink-0">
             <input
@@ -175,6 +244,14 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
               ))}
             </div>
           </div>
+
+          <button
+            onClick={spotify.connect}
+            className="flex items-center gap-2 px-3 py-1.5 mb-2 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-sm">link</span>
+            Connect Spotify for full control
+          </button>
 
           <p className="text-xs text-on-surface-variant/50 text-center mb-2">or paste a Spotify link</p>
           <div className="flex gap-2 shrink-0">
