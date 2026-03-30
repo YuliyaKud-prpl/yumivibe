@@ -18,6 +18,8 @@ export function TimerBlock({ block, onUpdate }: BlockProps) {
     (block.content.remaining as number) ?? defaultDuration
   );
   const [running, setRunning] = useState(false);
+  const [label, setLabel] = useState((block.content.label as string) ?? 'Deep Work');
+  const [editingLabel, setEditingLabel] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const clearTimer = useCallback(() => {
@@ -73,9 +75,24 @@ export function TimerBlock({ block, onUpdate }: BlockProps) {
 
   return (
     <div className="p-8 h-full flex flex-col items-center justify-center rounded-2xl border" style={{ borderColor: accent + '15' }}>
-      <span className="text-sm font-bold text-primary-container uppercase tracking-widest mb-2">
-        Deep Work
-      </span>
+      {editingLabel ? (
+        <input
+          type="text"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          onBlur={() => { setEditingLabel(false); onUpdate({ ...block.content, label }); }}
+          onKeyDown={(e) => { if (e.key === 'Enter') { setEditingLabel(false); onUpdate({ ...block.content, label }); } }}
+          autoFocus
+          className="text-sm font-bold text-primary-container uppercase tracking-widest mb-2 bg-transparent border-b border-primary-container/30 outline-none text-center w-32"
+        />
+      ) : (
+        <button
+          onClick={() => setEditingLabel(true)}
+          className="text-sm font-bold text-primary-container uppercase tracking-widest mb-2 hover:opacity-70 cursor-pointer transition-opacity"
+        >
+          {label}
+        </button>
+      )}
       <span className="text-6xl font-black tracking-tighter text-on-surface mb-8">
         {String(mins).padStart(2, '0')}:{String(secs).padStart(2, '0')}
       </span>
