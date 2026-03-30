@@ -53,20 +53,19 @@ function parseCommand(transcript: string): ParsedCommand | null {
       target: 'spotify', command: 'play', label: 'Play music' },
     { patterns: [/\b(pause|stop|mute)\s+(spotify|music|song|track)\b/],
       target: 'spotify', command: 'pause', label: 'Pause music' },
-    // Next/skip — YouTube playlist
-    { patterns: [/\bnext\s+(song|track|music)\b/, /\bskip\b/],
-      target: 'youtube', command: 'next', label: 'Next video' },
+    { patterns: [/\bnext\s+(song|track|music)\b/, /\bskip\s+(song|track)\b/, /\bskip\b/],
+      target: 'spotify', command: 'next', label: 'Next song' },
     { patterns: [/\b(previous|prev|back)\s+(song|track|music)\b/],
-      target: 'youtube', command: 'previous', label: 'Previous video' },
+      target: 'spotify', command: 'previous', label: 'Previous song' },
     // Simple commands — control both
     { patterns: [/\bpause\b/, /\bstop\b/],
       target: 'all', command: 'pause', label: 'Pause' },
     { patterns: [/\bplay\b/, /\bresume\b/],
       target: 'all', command: 'play', label: 'Play' },
     { patterns: [/\bnext\b/],
-      target: 'youtube', command: 'next', label: 'Next' },
+      target: 'all', command: 'next', label: 'Next' },
     { patterns: [/\b(previous|prev|back)\b/],
-      target: 'youtube', command: 'previous', label: 'Previous' },
+      target: 'all', command: 'previous', label: 'Previous' },
   ];
 
   for (const cmd of commands) {

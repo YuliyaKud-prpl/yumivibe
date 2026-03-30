@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { AuthProvider } from '@/context/AuthContext';
+import { SpotifyProvider } from '@/context/SpotifyContext';
 import { ToastProvider } from '@/components/errors/ErrorToast';
 import './globals.css';
 
@@ -32,9 +33,11 @@ export default function RootLayout({
       <body className={plusJakartaSans.className}>
         <ThemeProvider>
           <AuthProvider>
-            <ToastProvider>
-              {children}
-            </ToastProvider>
+            <SpotifyProvider>
+              <ToastProvider>
+                {children}
+              </ToastProvider>
+            </SpotifyProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

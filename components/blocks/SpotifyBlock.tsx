@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Block } from '@/types/dashboard';
 import { useDashboardContext } from '@/context/DashboardContext';
+import { useSpotify } from '@/context/SpotifyContext';
 import { subscribeMedia } from '@/utils/mediaEvents';
 
 interface BlockProps {
@@ -23,6 +24,17 @@ function toEmbedUrl(url: string): string | null {
   }
 }
 
+function toSpotifyUri(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    const match = parsed.pathname.match(/^\/(track|album|playlist|episode|show)\/([A-Za-z0-9]+)/);
+    if (!match) return null;
+    return `spotify:${match[1]}:${match[2]}`;
+  } catch {
+    return null;
+  }
+}
+
 const PRESETS = [
   { name: 'Lofi Beats', url: 'https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn' },
   { name: 'Deep Focus', url: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ' },
@@ -32,6 +44,7 @@ const PRESETS = [
 
 export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const { dashboard } = useDashboardContext();
+  const spotify = useSpotify();
   const accent = dashboard.accentColor ?? '#237227';
   const savedUrl = (block.content.embedUrl as string) ?? '';
   const [urlInput, setUrlInput] = useState(savedUrl);
@@ -41,19 +54,28 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const [error, setError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  // Voice control integration
   useEffect(() => {
     const unsubscribe = subscribeMedia('spotify', (command) => {
-      if (command !== 'play' && command !== 'pause') return;
-      const iframe = iframeRef.current;
-      if (!iframe?.contentWindow) return;
-      // Send twice with delay — Spotify embed sometimes misses the first message
-      iframe.contentWindow.postMessage({ command }, 'https://open.spotify.com');
-      setTimeout(() => {
-        iframe.contentWindow?.postMessage({ command }, 'https://open.spotify.com');
-      }, 300);
+      if (spotify.isConnected && spotify.isReady) {
+        // Use Web API for full control
+        if (command === 'play') spotify.play();
+        else if (command === 'pause') spotify.pause();
+        else if (command === 'next') spotify.next();
+        else if (command === 'previous') spotify.previous();
+      } else {
+        // Fallback: embed postMessage (play/pause only)
+        if (command !== 'play' && command !== 'pause') return;
+        const iframe = iframeRef.current;
+        if (!iframe?.contentWindow) return;
+        iframe.contentWindow.postMessage({ command }, 'https://open.spotify.com');
+        setTimeout(() => {
+          iframe.contentWindow?.postMessage({ command }, 'https://open.spotify.com');
+        }, 300);
+      }
     });
     return unsubscribe;
-  }, []);
+  }, [spotify]);
 
   const loadEmbed = useCallback((url?: string) => {
     const trimmed = (url ?? urlInput).trim();
@@ -64,11 +86,43 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     setEmbedUrl(embed);
     setUrlInput(trimmed);
     onUpdate({ ...block.content, embedUrl: trimmed });
-  }, [urlInput, block.content, onUpdate]);
+
+    // If connected via SDK, start playing
+    if (spotify.isConnected && spotify.isReady) {
+      const uri = toSpotifyUri(trimmed);
+      if (uri) spotify.play(uri);
+    }
+  }, [urlInput, block.content, onUpdate, spotify]);
 
   return (
     <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>
       {error && <p className="text-error text-xs mb-2">{error}</p>}
+
+      {/* Spotify connect banner */}
+      {!spotify.isConnected && (
+        <button
+          onClick={spotify.connect}
+          className="flex items-center gap-2 px-3 py-2 mb-3 rounded-xl bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
+        >
+          <span className="material-symbols-outlined text-base">link</span>
+          Connect Spotify for full control (skip, previous)
+        </button>
+      )}
+
+      {spotify.isConnected && (
+        <div className="flex items-center justify-between mb-3">
+          <span className="flex items-center gap-1 text-xs text-[#1DB954]">
+            <span className="w-2 h-2 rounded-full bg-[#1DB954]" />
+            Spotify connected
+          </span>
+          <button
+            onClick={spotify.disconnect}
+            className="text-xs text-on-surface-variant/40 hover:text-on-surface-variant cursor-pointer"
+          >
+            Disconnect
+          </button>
+        </div>
+      )}
 
       {embedUrl ? (
         <>
@@ -103,7 +157,6 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
         </>
       ) : (
         <>
-          {/* Quick picks */}
           <div className="mb-3">
             <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant/60 mb-2">
               Quick picks
@@ -122,7 +175,6 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
             </div>
           </div>
 
-          {/* Or paste URL */}
           <p className="text-xs text-on-surface-variant/50 text-center mb-2">or paste a Spotify link</p>
           <div className="flex gap-2 shrink-0">
             <input

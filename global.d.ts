@@ -43,3 +43,35 @@ interface SpeechRecognitionErrorEvent {
 }
 
 declare const webkitSpeechRecognition: { new(): SpeechRecognition } | undefined;
+
+declare namespace Spotify {
+  interface Player {
+    connect(): Promise<boolean>;
+    disconnect(): void;
+    addListener(event: string, callback: (data: Record<string, unknown>) => void): void;
+    removeListener(event: string): void;
+    getCurrentState(): Promise<Record<string, unknown> | null>;
+    setName(name: string): Promise<void>;
+    getVolume(): Promise<number>;
+    setVolume(volume: number): Promise<void>;
+    pause(): Promise<void>;
+    resume(): Promise<void>;
+    togglePlay(): Promise<void>;
+    seek(positionMs: number): Promise<void>;
+    previousTrack(): Promise<void>;
+    nextTrack(): Promise<void>;
+  }
+
+  interface PlayerInit {
+    name: string;
+    getOAuthToken: (cb: (token: string) => void) => void;
+    volume?: number;
+  }
+
+  const Player: { new(options: PlayerInit): Player };
+}
+
+interface Window {
+  onSpotifyWebPlaybackSDKReady: (() => void) | undefined;
+  Spotify?: { Player: typeof Spotify.Player };
+}
