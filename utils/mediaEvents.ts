@@ -1,4 +1,4 @@
-type MediaCommand = 'play' | 'pause' | 'next' | 'previous' | 'mute' | 'unmute';
+type MediaCommand = 'play' | 'pause' | 'next' | 'previous' | 'mute' | 'unmute' | 'play-muted';
 type MediaTarget = 'youtube' | 'spotify' | 'all';
 type MediaCallback = (command: MediaCommand) => void;
 
@@ -27,6 +27,12 @@ export function publishMedia(
   command: MediaCommand
 ): void {
   if (target === 'all') {
+    if (command === 'play') {
+      // Play both but mute YouTube so Spotify audio is heard
+      listeners.get('youtube')?.forEach((cb) => cb('play-muted'));
+      listeners.get('spotify')?.forEach((cb) => cb('play'));
+      return;
+    }
     listeners.forEach((cbs) => cbs.forEach((cb) => cb(command)));
     return;
   }

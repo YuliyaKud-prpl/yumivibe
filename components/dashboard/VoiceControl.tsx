@@ -41,9 +41,12 @@ export function VoiceControl({ className }: VoiceControlProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showHelp]);
 
+  const [showHover, setShowHover] = useState(false);
+
   const toggle = () => {
     if (isListening) {
       stopListening();
+      setShowHelp(false);
     } else {
       startListening();
       setShowHelp(true);
@@ -67,13 +70,14 @@ export function VoiceControl({ className }: VoiceControlProps) {
     <div ref={helpRef} className={`relative ${className ?? ''}`}>
       <button
         onClick={toggle}
+        onMouseEnter={() => setShowHover(true)}
+        onMouseLeave={() => setShowHover(false)}
         className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors cursor-pointer ${
           isListening
             ? 'bg-green-500/20 text-green-500'
             : 'hover:bg-surface-container-low dark:hover:bg-white/10 text-on-surface-variant'
         }`}
         aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
-        title={isListening ? 'Listening...' : 'Voice control'}
       >
         <span className="material-symbols-outlined">mic</span>
         {isListening && (
@@ -88,8 +92,8 @@ export function VoiceControl({ className }: VoiceControlProps) {
         </span>
       )}
 
-      {/* Voice commands help */}
-      {showHelp && isListening && !showTooltip && (
+      {/* Voice commands help — on hover or when listening */}
+      {((showHover && !isListening) || (showHelp && isListening)) && !showTooltip && (
         <div className="absolute right-0 top-full mt-2 w-64 bg-surface-container-lowest rounded-2xl shadow-lg border border-outline-variant/20 p-4 z-50">
           <div className="flex items-center justify-between mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">

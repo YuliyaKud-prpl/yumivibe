@@ -64,15 +64,24 @@ export function YouTubeBlock({ block, onUpdate }: BlockProps) {
       }
       const iframe = iframeRef.current;
       if (!iframe?.contentWindow) return;
-      let func: string;
-      if (command === 'play') func = 'playVideo';
-      else if (command === 'mute') func = 'mute';
-      else if (command === 'unmute') func = 'unMute';
-      else func = 'pauseVideo';
-      iframe.contentWindow.postMessage(
-        JSON.stringify({ event: 'command', func, args: '' }),
-        'https://www.youtube.com'
-      );
+      const post = (func: string) =>
+        iframe.contentWindow?.postMessage(
+          JSON.stringify({ event: 'command', func, args: '' }),
+          'https://www.youtube.com'
+        );
+
+      if (command === 'play-muted') {
+        post('mute');
+        post('playVideo');
+      } else if (command === 'play') {
+        post('playVideo');
+      } else if (command === 'mute') {
+        post('mute');
+      } else if (command === 'unmute') {
+        post('unMute');
+      } else {
+        post('pauseVideo');
+      }
     });
     return unsubscribe;
   }, [playlist, block.content, onUpdate]);
