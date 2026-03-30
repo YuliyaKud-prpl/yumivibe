@@ -110,14 +110,14 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
       )}
 
       {spotify.isConnected && (
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-3 relative z-10">
           <span className="flex items-center gap-1 text-xs text-[#1DB954]">
             <span className="w-2 h-2 rounded-full bg-[#1DB954]" />
-            Spotify connected
+            Connected
           </span>
           <button
-            onClick={spotify.disconnect}
-            className="text-xs text-on-surface-variant/40 hover:text-on-surface-variant cursor-pointer"
+            onClick={(e) => { e.stopPropagation(); spotify.disconnect(); }}
+            className="text-xs text-on-surface-variant/40 hover:text-error cursor-pointer px-2 py-1 rounded-lg hover:bg-error/10 transition-colors"
           >
             Disconnect
           </button>

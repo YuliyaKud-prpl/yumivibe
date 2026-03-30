@@ -198,9 +198,18 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
 
   const play = useCallback(async (uri?: string) => {
     if (!accessToken || !deviceId) return;
-    const body = uri ? { context_uri: uri, device_id: deviceId } : undefined;
-    const endpoint = uri ? '' : '/play';
-    await spotifyApi(endpoint || '/play', accessToken, 'PUT', body ?? { device_id: deviceId });
+    // Transfer playback to YumiVibe device first
+    await fetch('https://api.spotify.com/v1/me/player', {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ device_ids: [deviceId], play: true }),
+    });
+    if (uri) {
+      await spotifyApi('/play', accessToken, 'PUT', { context_uri: uri });
+    }
   }, [accessToken, deviceId]);
 
   const pause = useCallback(async () => {

@@ -16,7 +16,7 @@ function isVoiceSupported(): boolean {
 }
 
 type MediaTarget = 'youtube' | 'spotify' | 'all';
-type MediaCommand = 'play' | 'pause' | 'next' | 'previous';
+type MediaCommand = 'play' | 'pause' | 'next' | 'previous' | 'mute' | 'unmute';
 
 interface ParsedCommand {
   target: MediaTarget;
@@ -57,6 +57,11 @@ function parseCommand(transcript: string): ParsedCommand | null {
       target: 'spotify', command: 'next', label: 'Next song' },
     { patterns: [/\b(previous|prev|back)\s+(song|track|music)\b/],
       target: 'spotify', command: 'previous', label: 'Previous song' },
+    // Mute/unmute video
+    { patterns: [/\bmute\s+(video|youtube)\b/, /\bmute\b/],
+      target: 'youtube', command: 'mute', label: 'Mute video' },
+    { patterns: [/\bunmute\s+(video|youtube)\b/, /\bunmute\b/, /\bsound\s+on\b/],
+      target: 'youtube', command: 'unmute', label: 'Unmute video' },
     // Simple commands — control both
     { patterns: [/\bpause\b/, /\bstop\b/],
       target: 'all', command: 'pause', label: 'Pause' },

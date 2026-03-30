@@ -108,7 +108,7 @@ export function VoiceControl({ className }: VoiceControlProps) {
             <div>
               <p className="font-semibold text-on-surface mb-1">YouTube</p>
               <p>&quot;play video&quot; &middot; &quot;pause video&quot;</p>
-              <p>&quot;next video&quot; &middot; &quot;previous video&quot;</p>
+              <p>&quot;next video&quot; &middot; &quot;mute&quot; &middot; &quot;unmute&quot;</p>
             </div>
             <div>
               <p className="font-semibold text-on-surface mb-1">Spotify</p>

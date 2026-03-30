@@ -64,7 +64,11 @@ export function YouTubeBlock({ block, onUpdate }: BlockProps) {
       }
       const iframe = iframeRef.current;
       if (!iframe?.contentWindow) return;
-      const func = command === 'play' ? 'playVideo' : 'pauseVideo';
+      let func: string;
+      if (command === 'play') func = 'playVideo';
+      else if (command === 'mute') func = 'mute';
+      else if (command === 'unmute') func = 'unMute';
+      else func = 'pauseVideo';
       iframe.contentWindow.postMessage(
         JSON.stringify({ event: 'command', func, args: '' }),
         'https://www.youtube.com'

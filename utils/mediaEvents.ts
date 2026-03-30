@@ -1,4 +1,4 @@
-type MediaCommand = 'play' | 'pause' | 'next' | 'previous';
+type MediaCommand = 'play' | 'pause' | 'next' | 'previous' | 'mute' | 'unmute';
 type MediaTarget = 'youtube' | 'spotify' | 'all';
 type MediaCallback = (command: MediaCommand) => void;
 
