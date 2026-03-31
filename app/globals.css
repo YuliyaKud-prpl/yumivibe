@@ -34,12 +34,12 @@
   --color-inverse-primary: #7BC67F;
   --color-primary-fixed: #C4E8C6;
   --color-primary-fixed-dim: #519A66;
-  --color-sage-50: #F8F6EF;
-  --color-sage-100: #EDEBE2;
+  --color-sage-50: #F0F7F0;
+  --color-sage-100: #C4E8C6;
   --color-sage-200: #519A66;
   --color-sage-300: #237227;
-  --color-sage-text: #1C1B16;
-  --color-sage-muted: #7B7768;
+  --color-sage-text: #1a4a1d;
+  --color-sage-muted: #6B8A6E;
 }
 
 .material-symbols-outlined {
@@ -79,11 +79,11 @@ html.dark {
   --color-inverse-primary: #237227;
   --color-primary-fixed: #C4E8C6;
   --color-primary-fixed-dim: #519A66;
-  --color-sage-50: #1C1B16;
-  --color-sage-100: #2A2920;
-  --color-sage-200: #4A4739;
+  --color-sage-50: #1A1D11;
+  --color-sage-100: #30332B;
+  --color-sage-200: #434840;
   --color-sage-300: #519A66;
-  --color-sage-text: #E8E5D8;
+  --color-sage-text: #E2E8D6;
   --color-sage-muted: #7BC67F;
 }
 
