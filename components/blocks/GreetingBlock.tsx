@@ -29,6 +29,12 @@ const THEME_MAP: Record<string, GreetingTheme> = {
     textColor: '#1e3a5f',
     subtitleOpacity: '70',
   },
+  '#176B87': {
+    gradientFrom: '#dbeafe',
+    gradientTo: '#7dd3fc',
+    textColor: '#0c3547',
+    subtitleOpacity: '70',
+  },
   '#237227': {
     gradientFrom: '#519A66',
     gradientTo: '#FFAA00',

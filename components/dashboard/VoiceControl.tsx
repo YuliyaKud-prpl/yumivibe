@@ -5,9 +5,12 @@ import { useVoiceControl } from '@/hooks/useVoiceControl';
 
 interface VoiceControlProps {
   className?: string;
+  hasYoutube: boolean;
+  hasSpotify: boolean;
+  spotifyConnected: boolean;
 }
 
-export function VoiceControl({ className }: VoiceControlProps) {
+export function VoiceControl({ className, hasYoutube, hasSpotify, spotifyConnected }: VoiceControlProps) {
   const { isSupported, isListening, lastCommand, startListening, stopListening } =
     useVoiceControl();
   const [mounted, setMounted] = useState(false);
@@ -99,26 +102,40 @@ export function VoiceControl({ className }: VoiceControlProps) {
             <span className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">
               Voice Commands
             </span>
-            <span className="flex items-center gap-1 text-xs text-green-500">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              Listening
-            </span>
+            {isListening && (
+              <span className="flex items-center gap-1 text-xs text-green-500">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                Listening
+              </span>
+            )}
           </div>
           <div className="space-y-2 text-xs text-on-surface-variant">
-            <div>
-              <p className="font-semibold text-on-surface mb-1">All media</p>
-              <p>&quot;pause&quot; &middot; &quot;play&quot; &middot; &quot;stop everything&quot;</p>
-            </div>
-            <div>
-              <p className="font-semibold text-on-surface mb-1">YouTube</p>
-              <p>&quot;play video&quot; &middot; &quot;pause video&quot;</p>
-              <p>&quot;next video&quot; &middot; &quot;mute&quot; &middot; &quot;unmute&quot;</p>
-            </div>
-            <div>
-              <p className="font-semibold text-on-surface mb-1">Spotify</p>
-              <p>&quot;play music&quot; &middot; &quot;pause music&quot;</p>
-              <p>&quot;next song&quot; &middot; &quot;skip&quot; &middot; &quot;previous song&quot;</p>
-            </div>
+            {hasYoutube && hasSpotify && (
+              <div>
+                <p className="font-semibold text-on-surface mb-1">All media</p>
+                <p>&quot;pause&quot; &middot; &quot;play&quot; &middot; &quot;stop everything&quot;</p>
+              </div>
+            )}
+            {hasYoutube && (
+              <div>
+                <p className="font-semibold text-on-surface mb-1">YouTube</p>
+                <p>&quot;play video&quot; &middot; &quot;pause video&quot;</p>
+                <p>&quot;next video&quot; &middot; &quot;mute&quot; &middot; &quot;unmute&quot;</p>
+              </div>
+            )}
+            {hasSpotify && (
+              <div>
+                <p className="font-semibold text-on-surface mb-1">Spotify</p>
+                {spotifyConnected ? (
+                  <>
+                    <p>&quot;play music&quot; &middot; &quot;pause music&quot;</p>
+                    <p>&quot;next song&quot; &middot; &quot;skip&quot; &middot; &quot;previous song&quot;</p>
+                  </>
+                ) : (
+                  <p>&quot;play music&quot; &middot; &quot;pause music&quot;</p>
+                )}
+              </div>
+            )}
           </div>
           <button
             onClick={() => setShowHelp(false)}

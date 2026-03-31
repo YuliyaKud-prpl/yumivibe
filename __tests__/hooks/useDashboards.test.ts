@@ -51,6 +51,7 @@ function makeDashboard(overrides: Partial<Dashboard> = {}): Dashboard {
     theme: 'light',
     background: 'linear-gradient(135deg, #A1BC98, #D2DCB6)',
     backgroundType: 'gradient',
+    accentColor: '#237227',
     blocks: [],
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',

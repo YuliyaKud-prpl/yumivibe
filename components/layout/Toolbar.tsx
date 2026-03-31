@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { type BlockType } from '@/types/dashboard';
 import { useTheme } from '@/context/ThemeContext';
 import { useDashboardContext } from '@/context/DashboardContext';
+import { useSpotify } from '@/context/SpotifyContext';
 import { AddBlockMenu } from '@/components/dashboard/AddBlockMenu';
 import { PalettePicker } from '@/components/dashboard/PalettePicker';
 import { VoiceControl } from '@/components/dashboard/VoiceControl';
@@ -21,8 +22,11 @@ export function Toolbar({ dashboardName, onNameChange, onAddBlock }: ToolbarProp
   const [backHovered, setBackHovered] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const { theme, toggleTheme } = useTheme();
-  const { dashboard, updateDashboard } = useDashboardContext();
+  const { dashboard, blocks, updateDashboard } = useDashboardContext();
+  const { isConnected: spotifyConnected } = useSpotify();
   const accentColor = dashboard.accentColor ?? '#237227';
+  const hasYoutube = blocks.some((b) => b.type === 'youtube');
+  const hasSpotify = blocks.some((b) => b.type === 'spotify');
 
   const commitName = useCallback(() => {
     const trimmed = nameValue.trim();
@@ -108,7 +112,13 @@ export function Toolbar({ dashboardName, onNameChange, onAddBlock }: ToolbarProp
             </span>
           </button>
 
-          <VoiceControl />
+          {(hasYoutube || hasSpotify) && (
+            <VoiceControl
+              hasYoutube={hasYoutube}
+              hasSpotify={hasSpotify}
+              spotifyConnected={spotifyConnected}
+            />
+          )}
         </div>
 
         {/* Add Block button */}

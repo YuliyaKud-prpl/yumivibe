@@ -53,7 +53,7 @@ export const mapDashboard = (
   theme: row.theme,
   background: row.background,
   backgroundType: row.background_type,
-  ...(row.accent_color ? { accentColor: row.accent_color } : {}),
+  accentColor: row.accent_color ?? '#237227',
   ...(row.palette
     ? { palette: row.palette as Dashboard['palette'] }
     : {}),

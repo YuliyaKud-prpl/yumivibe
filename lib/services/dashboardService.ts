@@ -94,11 +94,11 @@ const TEMPLATE_BLOCKS: Record<string, TemplateConfig> = {
     bgType: 'gradient',
     accent: '#176B87',
     blocks: [
-      { type: 'title', title: 'Work Focus', x: 0, y: 0, w: 7, h: 2 },
-      { type: 'clock', title: 'Clock', x: 7, y: 0, w: 5, h: 3 },
+      { type: 'title', title: 'Work Focus', x: 0, y: 0, w: 8, h: 2 },
+      { type: 'clock', title: 'Clock', x: 8, y: 0, w: 4, h: 3 },
       { type: 'pomodoro', title: 'Pomodoro', x: 0, y: 2, w: 4, h: 5 },
-      { type: 'notes', title: 'Notes', x: 4, y: 2, w: 4, h: 4 },
-      { type: 'todos', title: 'Tasks', x: 8, y: 3, w: 4, h: 5 },
+      { type: 'todos', title: 'Tasks', x: 4, y: 2, w: 4, h: 5 },
+      { type: 'notes', title: 'Notes', x: 8, y: 3, w: 4, h: 4 },
     ],
   },
   'Chill & Music': {

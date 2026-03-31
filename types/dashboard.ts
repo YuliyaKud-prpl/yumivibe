@@ -35,7 +35,7 @@ export interface Dashboard {
   theme: 'light' | 'dark';
   background: string;
   backgroundType: 'color' | 'gradient' | 'image' | 'unsplash';
-  accentColor?: string;
+  accentColor: string;
   palette?: {
     greetingFrom: string;
     greetingTo: string;

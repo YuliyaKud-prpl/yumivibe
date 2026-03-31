@@ -113,6 +113,7 @@ export function useDashboards(): UseDashboardsReturn {
         theme: localSummary.theme,
         background: localSummary.background,
         backgroundType: 'gradient',
+        accentColor: '#237227',
         blocks: [],
         createdAt: now,
         updatedAt: now,
