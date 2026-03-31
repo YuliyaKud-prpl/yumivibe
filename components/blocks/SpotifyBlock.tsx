@@ -51,20 +51,24 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const rawSavedUrl = (block.content.embedUrl as string) ?? '';
   const savedUrl = rawSavedUrl === FALLBACK_URL ? '' : rawSavedUrl;
   const [urlInput, setUrlInput] = useState(savedUrl);
-  const [userPickedUrl, setUserPickedUrl] = useState(!!savedUrl);
-  const [embedUrl, setEmbedUrl] = useState<string | null>(() =>
-    savedUrl ? toEmbedUrl(savedUrl) ?? savedUrl : null
-  );
   const [error, setError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Voice control:
-  // - URL loaded → embed handles play/pause, skip/next disabled (embed doesn't support it)
-  // - No URL → SDK handles everything (play/pause/skip/next on user's context)
+  // For non-connected users: embed URL
+  const [embedUrl, setEmbedUrl] = useState<string | null>(() =>
+    savedUrl ? toEmbedUrl(savedUrl) ?? savedUrl : null
+  );
+
+  // Voice control — all via SDK when connected
   useEffect(() => {
     const unsubscribe = subscribeMedia('spotify', (command) => {
-      if (embedUrl) {
-        // URL loaded — embed handles play/pause only
+      if (spotify.isConnected) {
+        if (command === 'play') spotify.play();
+        else if (command === 'pause') spotify.pause();
+        else if (command === 'next') spotify.next();
+        else if (command === 'previous') spotify.previous();
+      } else {
+        // Fallback: embed postMessage (play/pause only)
         if (command !== 'play' && command !== 'pause') return;
         const iframe = iframeRef.current;
         if (!iframe?.contentWindow) return;
@@ -72,82 +76,140 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
         setTimeout(() => {
           iframe.contentWindow?.postMessage({ command }, 'https://open.spotify.com');
         }, 300);
-      } else if (spotify.isConnected) {
-        // No URL — SDK controls user's context
-        if (command === 'play') spotify.play();
-        else if (command === 'pause') spotify.pause();
-        else if (command === 'next') spotify.next();
-        else if (command === 'previous') spotify.previous();
       }
     });
     return unsubscribe;
-  }, [spotify, embedUrl]);
+  }, [spotify]);
 
-  const loadEmbed = useCallback((url?: string) => {
+  const loadUrl = useCallback((url?: string) => {
     const trimmed = (url ?? urlInput).trim();
 
-    // Empty input — reset to empty state
     if (!trimmed) {
+      // Clear — go back to context mode
       setEmbedUrl(null);
       setUrlInput('');
-      setUserPickedUrl(false);
       setError(null);
       onUpdate({ ...block.content, embedUrl: '' });
       return;
     }
 
-    const embed = toEmbedUrl(trimmed);
-    if (!embed) { setError('Invalid Spotify URL'); setEmbedUrl(null); return; }
+    if (!toEmbedUrl(trimmed) && !toSpotifyUri(trimmed)) {
+      setError('Invalid Spotify URL');
+      return;
+    }
+
     setError(null);
-    setEmbedUrl(embed);
     setUrlInput(trimmed);
-    setUserPickedUrl(true);
     onUpdate({ ...block.content, embedUrl: trimmed });
 
-    // Stop SDK playback so embed takes over without conflict
     if (spotify.isConnected) {
-      spotify.pause();
+      // Connected — play via SDK
+      const uri = toSpotifyUri(trimmed);
+      if (uri) spotify.play(uri);
+    } else {
+      // Not connected — load embed
+      const embed = toEmbedUrl(trimmed);
+      if (embed) setEmbedUrl(embed);
     }
   }, [urlInput, block.content, onUpdate, spotify]);
 
+  // Load saved URL via SDK on mount when connected
+  useEffect(() => {
+    if (spotify.isConnected && savedUrl) {
+      const uri = toSpotifyUri(savedUrl);
+      if (uri) spotify.play(uri);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [spotify.isConnected]);
+
+  const track = spotify.currentTrack;
+
+  // CONNECTED MODE — SDK player for everything
+  if (spotify.isConnected) {
+    return (
+      <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>
+        {error && <p className="text-error text-xs mb-2">{error}</p>}
+
+        {/* Now Playing */}
+        <div className="flex-1 flex flex-col items-center justify-center min-h-0">
+          {track ? (
+            <>
+              {track.albumArt && (
+                <img
+                  src={track.albumArt}
+                  alt={track.album}
+                  className="w-28 h-28 rounded-xl shadow-lg mb-3 object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              )}
+              <p className="text-sm font-bold text-on-surface text-center truncate w-full px-2">
+                {track.name}
+              </p>
+              <p className="text-xs text-on-surface-variant text-center truncate w-full px-2">
+                {track.artist}
+              </p>
+              <div className="flex items-center gap-5 mt-3">
+                <button onClick={spotify.previous} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-xl cursor-pointer">skip_previous</button>
+                <button
+                  onClick={spotify.togglePlay}
+                  className="w-11 h-11 flex items-center justify-center rounded-full text-white cursor-pointer hover:opacity-90"
+                  style={{ backgroundColor: accent }}
+                >
+                  <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {track.isPlaying ? 'pause' : 'play_arrow'}
+                  </span>
+                </button>
+                <button onClick={spotify.next} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-xl cursor-pointer">skip_next</button>
+              </div>
+            </>
+          ) : (
+            <div className="text-center text-on-surface-variant/50">
+              <span className="material-symbols-outlined text-4xl mb-2 block">headphones</span>
+              <p className="text-sm">Say &quot;play&quot; or pick a playlist</p>
+            </div>
+          )}
+        </div>
+
+        {/* Status + URL input */}
+        <div className="shrink-0 mt-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="flex items-center gap-1 text-xs text-[#1DB954]">
+              <span className="w-2 h-2 rounded-full bg-[#1DB954]" />
+              {urlInput ? 'Playing playlist' : 'Playing your music'}
+            </span>
+            <button onClick={spotify.disconnect} className="text-xs text-on-surface-variant/40 hover:text-error cursor-pointer">
+              Disconnect
+            </button>
+          </div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={urlInput}
+              onChange={(e) => setUrlInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && loadUrl()}
+              placeholder="Paste Spotify URL or clear for your music..."
+              className="flex-1 bg-surface-container-low text-on-surface text-sm rounded-lg py-2 px-3 border border-outline-variant/30 focus:border-outline-variant placeholder:text-on-surface-variant/40 outline-none"
+            />
+            <button
+              onClick={() => loadUrl()}
+              className="px-3 py-2 rounded-lg text-white text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: accent }}
+            >
+              <span className="material-symbols-outlined text-lg">{urlInput ? 'play_arrow' : 'sync'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // NOT CONNECTED — embed mode
   return (
     <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>
       {error && <p className="text-error text-xs mb-2">{error}</p>}
 
-      {/* Now Playing bar — only when no embed URL (playing from context) */}
-      {!embedUrl && spotify.isConnected && spotify.currentTrack && (
-        <div className="flex items-center gap-3 mb-2 p-2 rounded-xl bg-surface-container-low">
-          {spotify.currentTrack.albumArt && (
-            <img
-              src={spotify.currentTrack.albumArt}
-              alt={spotify.currentTrack.album}
-              className="w-10 h-10 rounded-lg object-cover shrink-0"
-              referrerPolicy="no-referrer"
-            />
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="text-xs font-bold text-on-surface truncate">{spotify.currentTrack.name}</p>
-            <p className="text-[10px] text-on-surface-variant truncate">{spotify.currentTrack.artist}</p>
-          </div>
-          <div className="flex items-center gap-0.5 shrink-0">
-            <button onClick={spotify.previous} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-base cursor-pointer">skip_previous</button>
-            <button
-              onClick={spotify.togglePlay}
-              className="w-7 h-7 flex items-center justify-center rounded-full text-white cursor-pointer"
-              style={{ backgroundColor: accent }}
-            >
-              <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
-                {spotify.currentTrack.isPlaying ? 'pause' : 'play_arrow'}
-              </span>
-            </button>
-            <button onClick={spotify.next} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-base cursor-pointer">skip_next</button>
-          </div>
-        </div>
-      )}
-
       {embedUrl ? (
         <>
-          {/* Embed player */}
           <div className="flex-1 min-h-0 rounded-xl overflow-hidden mb-2">
             <iframe
               ref={iframeRef}
@@ -159,40 +221,24 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
               style={{ minHeight: '152px' }}
             />
           </div>
-
-          {/* Connection status */}
-          {spotify.isConnected ? (
-            <div className="flex items-center justify-between mb-2">
-              <span className="flex items-center gap-1 text-xs text-[#1DB954]">
-                <span className="w-2 h-2 rounded-full bg-[#1DB954]" />
-                Voice: skip &amp; previous enabled
-              </span>
-              <button onClick={spotify.disconnect} className="text-xs text-on-surface-variant/40 hover:text-error cursor-pointer">
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={spotify.connect}
-              className="flex items-center gap-2 px-3 py-1.5 mb-2 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-sm">link</span>
-              Connect for skip &amp; previous
-            </button>
-          )}
-
-          {/* URL input */}
+          <button
+            onClick={spotify.connect}
+            className="flex items-center gap-2 px-3 py-1.5 mb-2 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-sm">link</span>
+            Connect for voice control &amp; skip
+          </button>
           <div className="flex gap-2 shrink-0">
             <input
               type="text"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && loadEmbed()}
+              onKeyDown={(e) => e.key === 'Enter' && loadUrl()}
               placeholder="Change Spotify URL..."
               className="flex-1 bg-surface-container-low text-on-surface text-sm rounded-lg py-2 px-3 border border-outline-variant/30 focus:border-outline-variant placeholder:text-on-surface-variant/40 outline-none"
             />
             <button
-              onClick={() => loadEmbed()}
+              onClick={() => loadUrl()}
               className="px-3 py-2 rounded-lg text-white text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity"
               style={{ backgroundColor: accent }}
             >
@@ -202,60 +248,40 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
         </>
       ) : (
         <>
-          {/* Quick picks — show when nothing is playing */}
-          {!(spotify.isConnected && spotify.currentTrack) && (
-            <div className="mb-3">
-              <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant/60 mb-2">
-                Quick picks
-              </p>
-              <div className="grid grid-cols-2 gap-2">
-                {PRESETS.map((p) => (
-                  <button
-                    key={p.name}
-                    onClick={() => loadEmbed(p.url)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-sm text-on-surface-variant transition-colors cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-base" style={{ color: accent }}>play_circle</span>
-                    {p.name}
-                  </button>
-                ))}
-              </div>
+          <div className="mb-3">
+            <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant/60 mb-2">Quick picks</p>
+            <div className="grid grid-cols-2 gap-2">
+              {PRESETS.map((p) => (
+                <button
+                  key={p.name}
+                  onClick={() => loadUrl(p.url)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-sm text-on-surface-variant transition-colors cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-base" style={{ color: accent }}>play_circle</span>
+                  {p.name}
+                </button>
+              ))}
             </div>
-          )}
-
-          {/* Connection status */}
-          {spotify.isConnected ? (
-            <div className="flex items-center justify-between mb-2">
-              <span className="flex items-center gap-1 text-xs text-[#1DB954]">
-                <span className="w-2 h-2 rounded-full bg-[#1DB954]" />
-                Connected — pick a playlist
-              </span>
-              <button onClick={spotify.disconnect} className="text-xs text-on-surface-variant/40 hover:text-error cursor-pointer">
-                Disconnect
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={spotify.connect}
-              className="flex items-center gap-2 px-3 py-1.5 mb-2 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
-            >
-              <span className="material-symbols-outlined text-sm">link</span>
-              Connect for voice control
-            </button>
-          )}
-
+          </div>
+          <button
+            onClick={spotify.connect}
+            className="flex items-center gap-2 px-3 py-1.5 mb-2 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-sm">link</span>
+            Connect for voice control
+          </button>
           <p className="text-xs text-on-surface-variant/50 text-center mb-2">or paste a Spotify link</p>
           <div className="flex gap-2 shrink-0">
             <input
               type="text"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && loadEmbed()}
+              onKeyDown={(e) => e.key === 'Enter' && loadUrl()}
               placeholder="Paste Spotify URL..."
               className="flex-1 bg-surface-container-low text-on-surface text-sm rounded-lg py-2 px-3 border border-outline-variant/30 focus:border-outline-variant placeholder:text-on-surface-variant/40 outline-none"
             />
             <button
-              onClick={() => loadEmbed()}
+              onClick={() => loadUrl()}
               className="px-3 py-2 rounded-lg text-white text-sm font-medium cursor-pointer hover:opacity-90 transition-opacity"
               style={{ backgroundColor: accent }}
             >
