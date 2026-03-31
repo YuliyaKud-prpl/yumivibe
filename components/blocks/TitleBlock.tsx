@@ -28,7 +28,7 @@ export function TitleBlock({ block, onUpdate }: BlockProps) {
 
   return (
     <div className="p-8 h-full flex flex-col justify-center rounded-2xl border border-surface-variant/20 shadow-[0_12px_40px_rgba(26,28,24,0.04)]">
-      <span className="text-xs font-bold uppercase tracking-widest text-secondary mb-2 block">
+      <span className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: accent }}>
         Current Focus
       </span>
       {editing ? (

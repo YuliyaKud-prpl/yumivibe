@@ -54,8 +54,8 @@ export function TodosBlock({ block, onUpdate }: BlockProps) {
   return (
     <div className="p-8 h-full flex flex-col rounded-2xl border" style={{ borderColor: accent + '15' }}>
       {/* Header */}
-      <h4 className="font-bold text-lg mb-6 flex items-center gap-2">
-        <span className="material-symbols-outlined" style={{ color: accent }}>checklist</span>
+      <h4 className="font-bold text-lg mb-6 flex items-center gap-2" style={{ color: accent }}>
+        <span className="material-symbols-outlined">checklist</span>
         {block.title || 'To-Do'}
         {items.length > 0 && (
           <span className="text-xs text-on-surface-variant/60 ml-auto font-normal">
