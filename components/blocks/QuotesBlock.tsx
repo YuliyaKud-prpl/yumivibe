@@ -102,12 +102,13 @@ export function QuotesBlock({ block, onUpdate }: BlockProps) {
             value={customText}
             onChange={(e) => setCustomText(e.target.value)}
             placeholder="Enter your own quote..."
-            className="w-full flex-1 border border-outline-variant rounded-xl p-4 text-sm text-on-surface bg-surface-container-lowest resize-none focus:outline-none focus:ring-1 focus:ring-primary italic"
+            className="w-full flex-1 border border-outline-variant rounded-xl p-4 text-sm text-on-surface bg-surface-container-lowest resize-none focus:outline-none focus:ring-1 focus:ring-outline-variant italic"
           />
           <div className="flex gap-2 mt-4">
             <button
               onClick={saveCustom}
-              className="px-4 py-2 bg-primary text-on-primary rounded-xl text-sm font-bold hover:opacity-90 transition-opacity"
+              className="px-4 py-2 text-white rounded-xl text-sm font-bold hover:opacity-90 transition-opacity"
+              style={{ backgroundColor: accent }}
             >
               Save
             </button>

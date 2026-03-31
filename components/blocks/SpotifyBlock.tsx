@@ -165,7 +165,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
               onChange={(e) => setUrlInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && loadEmbed()}
               placeholder="Paste Spotify URL..."
-              className="flex-1 bg-surface-container-low text-on-surface text-sm rounded-lg py-2 px-3 border border-outline-variant/30 focus:border-primary placeholder:text-on-surface-variant/40 outline-none"
+              className="flex-1 bg-surface-container-low text-on-surface text-sm rounded-lg py-2 px-3 border border-outline-variant/30 focus:border-outline-variant placeholder:text-on-surface-variant/40 outline-none"
             />
             <button
               onClick={() => loadEmbed()}
@@ -214,7 +214,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
               onChange={(e) => setUrlInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && loadEmbed()}
               placeholder="Change Spotify URL..."
-              className="flex-1 bg-surface-container-low text-on-surface text-sm rounded-lg py-2 px-3 border border-outline-variant/30 focus:border-primary placeholder:text-on-surface-variant/40 outline-none"
+              className="flex-1 bg-surface-container-low text-on-surface text-sm rounded-lg py-2 px-3 border border-outline-variant/30 focus:border-outline-variant placeholder:text-on-surface-variant/40 outline-none"
             />
             <button
               onClick={() => loadEmbed()}
@@ -261,7 +261,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
               onChange={(e) => setUrlInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && loadEmbed()}
               placeholder="Paste Spotify URL..."
-              className="flex-1 bg-surface-container-low text-on-surface text-sm rounded-lg py-2 px-3 border border-outline-variant/30 focus:border-primary placeholder:text-on-surface-variant/40 outline-none"
+              className="flex-1 bg-surface-container-low text-on-surface text-sm rounded-lg py-2 px-3 border border-outline-variant/30 focus:border-outline-variant placeholder:text-on-surface-variant/40 outline-none"
             />
             <button
               onClick={() => loadEmbed()}

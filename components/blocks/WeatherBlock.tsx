@@ -99,7 +99,7 @@ export function WeatherBlock({ block, onUpdate }: BlockProps) {
     <div className="px-8 pb-8 pt-10 h-full flex flex-col rounded-2xl border" style={{ borderColor: accent + '15' }}>
       {!weather && !loading && (
         <div className="flex gap-2 mb-4">
-          <div className="flex-1 flex items-center gap-2 border border-outline-variant/30 rounded-xl px-3 py-2 bg-surface-container-lowest focus-within:border-primary focus-within:ring-1 focus-within:ring-primary">
+          <div className="flex-1 flex items-center gap-2 border border-outline-variant/30 rounded-xl px-3 py-2 bg-surface-container-lowest focus-within:border-outline-variant focus-within:ring-1 focus-within:ring-outline-variant">
             <span className="material-symbols-outlined text-on-surface-variant text-lg">search</span>
             <input
               type="text"

@@ -74,9 +74,11 @@ export function TodosBlock({ block, onUpdate }: BlockProps) {
               className={`w-6 h-6 flex-shrink-0 rounded flex items-center justify-center transition-colors ${
                 item.done
                   ? 'text-white'
-                  : 'border-2 border-outline-variant hover:border-primary'
+                  : 'border-2 border-outline-variant'
               }`}
-              style={item.done ? { backgroundColor: accent } : undefined}
+              style={item.done ? { backgroundColor: accent } : { '--hover-border': accent } as React.CSSProperties}
+              onMouseEnter={(e) => { if (!item.done) (e.currentTarget as HTMLElement).style.borderColor = accent; }}
+              onMouseLeave={(e) => { if (!item.done) (e.currentTarget as HTMLElement).style.borderColor = ''; }}
             >
               {item.done && (
                 <span className="material-symbols-outlined text-sm">check</span>
@@ -108,7 +110,7 @@ export function TodosBlock({ block, onUpdate }: BlockProps) {
       )}
 
       {/* Add input */}
-      <div className="flex items-center gap-2 border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus-within:ring-1 focus-within:ring-primary mt-4">
+      <div className="flex items-center gap-2 border border-outline-variant rounded-xl px-3 py-2 bg-surface-container-lowest focus-within:ring-1 focus-within:ring-outline-variant mt-4">
         <span className="material-symbols-outlined text-on-surface-variant/40 text-lg">add</span>
         <input
           type="text"

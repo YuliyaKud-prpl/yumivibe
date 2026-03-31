@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { Block } from '@/types/dashboard';
+import { useDashboardContext } from '@/context/DashboardContext';
 
 interface BlockProps {
   block: Block;
@@ -9,6 +10,8 @@ interface BlockProps {
 }
 
 export function TitleBlock({ block, onUpdate }: BlockProps) {
+  const { dashboard } = useDashboardContext();
+  const accent = dashboard.accentColor ?? '#237227';
   const [text, setText] = useState((block.content.text as string) ?? '');
   const [editing, setEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -36,7 +39,8 @@ export function TitleBlock({ block, onUpdate }: BlockProps) {
           onChange={(e) => setText(e.target.value)}
           onBlur={save}
           onKeyDown={(e) => e.key === 'Enter' && save()}
-          className="text-4xl font-extrabold tracking-tight text-primary bg-transparent border-b-2 border-primary/30 outline-none w-full"
+          className="text-4xl font-extrabold tracking-tight bg-transparent border-b-2 outline-none w-full"
+          style={{ color: accent, borderColor: accent + '4D' }}
           placeholder="Type your focus..."
         />
       ) : (
@@ -44,7 +48,7 @@ export function TitleBlock({ block, onUpdate }: BlockProps) {
           onClick={startEdit}
           className="text-left w-full cursor-pointer group"
         >
-          <h2 className="text-4xl font-extrabold tracking-tight text-primary group-hover:opacity-80 transition-opacity">
+          <h2 className="text-4xl font-extrabold tracking-tight group-hover:opacity-80 transition-opacity" style={{ color: accent }}>
             {text || <span className="text-on-surface-variant/40">Click to edit title</span>}
           </h2>
         </button>

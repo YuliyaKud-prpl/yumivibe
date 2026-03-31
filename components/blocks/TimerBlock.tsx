@@ -83,12 +83,14 @@ export function TimerBlock({ block, onUpdate }: BlockProps) {
           onBlur={() => { setEditingLabel(false); onUpdate({ ...block.content, label }); }}
           onKeyDown={(e) => { if (e.key === 'Enter') { setEditingLabel(false); onUpdate({ ...block.content, label }); } }}
           autoFocus
-          className="text-sm font-bold text-primary-container uppercase tracking-widest mb-2 bg-transparent border-b border-primary-container/30 outline-none text-center w-32"
+          className="text-sm font-bold uppercase tracking-widest mb-2 bg-transparent border-b outline-none text-center w-32"
+          style={{ color: accent + 'BB', borderColor: accent + '4D' }}
         />
       ) : (
         <button
           onClick={() => setEditingLabel(true)}
-          className="text-sm font-bold text-primary-container uppercase tracking-widest mb-2 hover:opacity-70 cursor-pointer transition-opacity"
+          className="text-sm font-bold uppercase tracking-widest mb-2 hover:opacity-70 cursor-pointer transition-opacity"
+          style={{ color: accent + 'BB' }}
         >
           {label}
         </button>
@@ -140,7 +142,7 @@ export function TimerBlock({ block, onUpdate }: BlockProps) {
           disabled={running}
           defaultValue={Math.round(duration / 60)}
           onBlur={handleDurationChange}
-          className="w-16 border border-outline-variant rounded-lg px-2 py-1 text-center text-on-surface bg-surface-container-lowest disabled:opacity-50 focus:outline-none focus:ring-1 focus:ring-primary"
+          className="w-16 border border-outline-variant rounded-lg px-2 py-1 text-center text-on-surface bg-surface-container-lowest disabled:opacity-50 focus:outline-none focus:ring-1 focus:ring-outline-variant"
         />
       </div>
     </div>

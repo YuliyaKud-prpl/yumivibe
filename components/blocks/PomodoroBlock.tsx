@@ -187,7 +187,10 @@ export function PomodoroBlock({ block, onUpdate }: BlockProps) {
       <div className="flex items-center gap-6 mt-8">
         <button
           onClick={reset}
-          className="text-on-surface-variant hover:text-primary transition-colors"
+          className="text-on-surface-variant transition-colors"
+          style={{ '--accent': accent } as React.CSSProperties}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = accent; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = ''; }}
           title="Reset"
         >
           <span className="material-symbols-outlined text-3xl">replay</span>
@@ -213,7 +216,9 @@ export function PomodoroBlock({ block, onUpdate }: BlockProps) {
         )}
         <button
           onClick={skip}
-          className="text-on-surface-variant hover:text-primary transition-colors"
+          className="text-on-surface-variant transition-colors"
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = accent; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = ''; }}
           title="Skip"
         >
           <span className="material-symbols-outlined text-3xl">skip_next</span>
