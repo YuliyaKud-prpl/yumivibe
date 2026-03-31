@@ -8,6 +8,7 @@ import { DashboardGrid } from '@/components/dashboard/DashboardGrid';
 import { Toolbar } from '@/components/layout/Toolbar';
 import { apiGet } from '@/utils/apiClient';
 import { loadFromStorage, saveToStorage, dashboardKey } from '@/utils/storage';
+import { getDashboardCssVars } from '@/utils/paletteColors';
 
 interface DashboardResponse {
   dashboard: Dashboard;
@@ -15,9 +16,10 @@ interface DashboardResponse {
 
 function DashboardInner() {
   const { dashboard, blocks, addBlock, updateDashboard } = useDashboardContext();
+  const cssVars = getDashboardCssVars(dashboard.accentColor);
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-surface" style={cssVars as React.CSSProperties}>
       <Toolbar
         dashboardName={dashboard.name}
         onNameChange={(name) => updateDashboard({ name })}
