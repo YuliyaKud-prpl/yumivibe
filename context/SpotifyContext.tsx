@@ -121,13 +121,9 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
 
   const doRefresh = useCallback(async (refresh: string) => {
     try {
-      const authToken = loadFromStorage<string>('yumivibe-auth-token');
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
-
       const res = await fetch('/api/auth/spotify/refresh', {
         method: 'POST',
-        headers,
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken: refresh }),
       });
       const json = await res.json();

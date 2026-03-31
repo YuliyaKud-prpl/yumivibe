@@ -2,16 +2,18 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { success, fromCatch } from '@/lib/utils/apiResponse';
 import { AppError } from '@/lib/utils/AppError';
-import { authenticateRequest } from '@/lib/middleware/auth';
 
 const refreshTokenSchema = z.object({
   refreshToken: z.string().min(1, 'Missing refresh token'),
 });
 
+// NOTE: This endpoint intentionally does NOT require JWT authentication.
+// The Spotify refresh token itself is the credential — it is issued by
+// Spotify's OAuth flow and can only be used with the matching client secret.
+// Requiring an additional JWT broke Spotify playback for guest users and
+// for any user whose YumiVibe session token expired before the Spotify token.
 export async function POST(request: NextRequest) {
   try {
-    await authenticateRequest(request);
-
     const body = await request.json();
     const parsed = refreshTokenSchema.safeParse(body);
     if (!parsed.success) {
