@@ -256,15 +256,32 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
             </div>
           </div>
 
-          <button
-            onClick={spotify.connect}
-            className="flex items-center gap-2 px-3 py-1.5 mb-2 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
-          >
-            <span className="material-symbols-outlined text-sm">link</span>
-            Connect Spotify for full control
-          </button>
+          {spotify.isConnected ? (
+            <div className="flex items-center justify-between mb-2">
+              <span className="flex items-center gap-1 text-xs text-[#1DB954]">
+                <span className="w-2 h-2 rounded-full bg-[#1DB954]" />
+                Connected — pick a playlist or say &quot;play&quot;
+              </span>
+              <button
+                onClick={spotify.disconnect}
+                className="text-xs text-on-surface-variant/40 hover:text-error cursor-pointer"
+              >
+                Disconnect
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={spotify.connect}
+              className="flex items-center gap-2 px-3 py-1.5 mb-2 rounded-lg bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] text-xs font-medium transition-colors cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-sm">link</span>
+              Connect Spotify for full control
+            </button>
+          )}
 
-          <p className="text-xs text-on-surface-variant/50 text-center mb-2">or paste a Spotify link</p>
+          <p className="text-xs text-on-surface-variant/50 text-center mb-2">
+            {spotify.isConnected ? 'Pick a playlist or paste a Spotify link' : 'or paste a Spotify link'}
+          </p>
           <div className="flex gap-2 shrink-0">
             <input
               type="text"
