@@ -108,8 +108,14 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
       saveToStorage(SPOTIFY_EXPIRY_KEY, expiry);
       scheduleRefresh(parseInt(expiresIn, 10) * 1000 - 60_000, refresh);
 
-      // Clean URL — remove hash fragment
-      window.history.replaceState({}, '', window.location.pathname);
+      // Redirect back to the dashboard where user clicked Connect
+      const returnPath = loadFromStorage<string>('yumivibe-spotify-return');
+      removeFromStorage('yumivibe-spotify-return');
+      if (returnPath && returnPath !== '/') {
+        window.location.href = returnPath;
+      } else {
+        window.history.replaceState({}, '', window.location.pathname);
+      }
     }
   }, []);
 
@@ -142,6 +148,8 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
   };
 
   const connect = useCallback(() => {
+    // Save current page so we can redirect back after OAuth
+    saveToStorage('yumivibe-spotify-return', window.location.pathname);
     window.location.href = '/api/auth/spotify';
   }, []);
 
