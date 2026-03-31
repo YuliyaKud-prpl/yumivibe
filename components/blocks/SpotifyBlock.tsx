@@ -113,14 +113,6 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     }
   }, [urlInput, block.content, onUpdate, spotify]);
 
-  // Load saved URL via SDK on mount when connected
-  useEffect(() => {
-    if (spotify.isConnected && savedUrl) {
-      const uri = toSpotifyUri(savedUrl);
-      if (uri) spotify.play(uri);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [spotify.isConnected]);
 
   const track = spotify.currentTrack;
 
