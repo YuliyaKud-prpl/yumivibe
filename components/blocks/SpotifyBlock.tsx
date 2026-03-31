@@ -175,37 +175,37 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
         <>
           {/* Now Playing — when connected, no embed, SDK is playing */}
           {spotify.isConnected && spotify.currentTrack ? (
-            <div className="flex-1 flex flex-col items-center justify-center min-h-0 mb-3">
+            <div className="flex items-center gap-3 mb-3 p-2 rounded-xl bg-surface-container-low">
               {spotify.currentTrack.albumArt && (
                 <img
                   src={spotify.currentTrack.albumArt}
                   alt={spotify.currentTrack.album}
-                  className="w-24 h-24 rounded-xl shadow-lg mb-3 object-cover"
+                  className="w-12 h-12 rounded-lg object-cover shrink-0"
                   referrerPolicy="no-referrer"
                 />
               )}
-              <p className="text-sm font-bold text-on-surface text-center truncate w-full">
-                {spotify.currentTrack.name}
-              </p>
-              <p className="text-xs text-on-surface-variant text-center truncate w-full">
-                {spotify.currentTrack.artist}
-              </p>
-              <div className="flex items-center gap-5 mt-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-on-surface truncate">{spotify.currentTrack.name}</p>
+                <p className="text-xs text-on-surface-variant truncate">{spotify.currentTrack.artist}</p>
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
                 <button onClick={spotify.previous} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-lg cursor-pointer">skip_previous</button>
                 <button
                   onClick={spotify.togglePlay}
-                  className="w-10 h-10 flex items-center justify-center rounded-full text-white cursor-pointer"
+                  className="w-8 h-8 flex items-center justify-center rounded-full text-white cursor-pointer"
                   style={{ backgroundColor: accent }}
                 >
-                  <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                  <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
                     {spotify.currentTrack.isPlaying ? 'pause' : 'play_arrow'}
                   </span>
                 </button>
                 <button onClick={spotify.next} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-lg cursor-pointer">skip_next</button>
               </div>
             </div>
-          ) : (
-            /* Quick picks */
+          ) : null}
+
+          {/* Quick picks — show when nothing is playing */}
+          {!(spotify.isConnected && spotify.currentTrack) && (
             <div className="mb-3">
               <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant/60 mb-2">
                 Quick picks
