@@ -7,7 +7,7 @@ Customizable personal dashboard. Create multiple dashboards with draggable/resiz
 - **Framework:** Next.js 14 (App Router) + TypeScript + Tailwind CSS
 - **Database:** PostgreSQL with raw SQL via `pg` (no ORM)
 - **Validation:** Zod (all API route handlers)
-- **AI:** Google Gemini API (free tier) for clothing suggestions
+- **AI:** Claude Haiku via AWS Bedrock for clothing suggestions
 - **Uploads:** formidable (background image uploads)
 - **Grid:** react-grid-layout (drag, resize, add, remove blocks)
 - **Testing:** Vitest + React Testing Library + Playwright
@@ -68,7 +68,7 @@ Non-negotiable. Follow exactly.
 - **Server Components by default.** Only add `'use client'` when the component needs hooks, browser APIs, or event handlers.
 - **Native `fetch()` for API calls.** No Axios. Use `utils/apiClient.ts` wrapper for error handling and retries.
 - **Named exports only.** No default exports (except Next.js pages/layouts which require them).
-- **Rate limit all external APIs.** In-memory tracking: Gemini (15 RPM), Unsplash (50/hr), OpenWeatherMap (1,000/day). Cache responses (weather 15 min, Unsplash 10 min).
+- **Rate limit all external APIs.** In-memory tracking: Claude Haiku (15 RPM), Unsplash (50/hr), OpenWeatherMap (1,000/day). Cache responses (weather 15 min, Unsplash 10 min).
 - **Block types are validated.** Only: `greeting`, `clock`, `timer`, `pomodoro`, `weather`, `quotes`, `notes`, `todos`, `youtube`, `spotify`, `title`.
 - **Tests for everything.** Route handlers, services, components, hooks, E2E flows. 80%+ coverage on services/hooks/utils.
 - **No `console.log` in production code.** Use proper error responses.

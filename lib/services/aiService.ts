@@ -1,10 +1,23 @@
+import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 import { AppError } from '@/lib/utils/AppError';
 import { checkGeminiLimit } from '@/lib/utils/rateLimiter';
 import * as cache from '@/lib/utils/cache';
 
-const GEMINI_CACHE_TTL_MS = 15 * 60 * 1000;
-const GEMINI_API_URL =
-  'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const AI_CACHE_TTL_MS = 15 * 60 * 1000;
+const MODEL_ID = 'anthropic.claude-3-haiku-20240307-v1:0';
+
+function getBedrockClient(): BedrockRuntimeClient | null {
+  const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+  const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+  const region = process.env.AWS_REGION ?? 'us-east-1';
+
+  if (!accessKeyId || !secretAccessKey) return null;
+
+  return new BedrockRuntimeClient({
+    region,
+    credentials: { accessKeyId, secretAccessKey },
+  });
+}
 
 const buildPrompt = (
   city: string,
@@ -56,14 +69,6 @@ const getFallbackSuggestion = (
   return `It's hot at ${temp} degrees! Wear breathable fabrics like cotton or linen, light colors, a hat, and stay hydrated.`;
 };
 
-interface GeminiResponse {
-  candidates?: Array<{
-    content?: {
-      parts?: Array<{ text?: string }>;
-    };
-  }>;
-}
-
 export const getClothingSuggestion = async (
   city: string,
   temp: number,
@@ -80,48 +85,37 @@ export const getClothingSuggestion = async (
     throw AppError.rateLimitGemini();
   }
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
+  const client = getBedrockClient();
+  if (!client) {
     return getFallbackSuggestion(temp, condition);
   }
 
   try {
-    const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const command = new InvokeModelCommand({
+      modelId: MODEL_ID,
+      contentType: 'application/json',
+      accept: 'application/json',
       body: JSON.stringify({
-        contents: [
+        anthropic_version: 'bedrock-2023-05-31',
+        max_tokens: 150,
+        messages: [
           {
-            parts: [{ text: buildPrompt(city, temp, condition) }],
+            role: 'user',
+            content: buildPrompt(city, temp, condition),
           },
         ],
-        generationConfig: {
-          maxOutputTokens: 150,
-          temperature: 0.7,
-        },
       }),
-      signal: AbortSignal.timeout(10_000),
     });
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        throw AppError.rateLimitGemini();
-      }
-      throw AppError.externalApiError(
-        'Gemini',
-        `HTTP ${response.status}`
-      );
-    }
-
-    const data = (await response.json()) as GeminiResponse;
-    const text =
-      data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const response = await client.send(command);
+    const body = JSON.parse(new TextDecoder().decode(response.body));
+    const text = body.content?.[0]?.text ?? '';
 
     if (!text) {
       return getFallbackSuggestion(temp, condition);
     }
 
-    cache.set(cacheKey, text, GEMINI_CACHE_TTL_MS);
+    cache.set(cacheKey, text, AI_CACHE_TTL_MS);
     return text;
   } catch (err) {
     if (err instanceof AppError) throw err;
