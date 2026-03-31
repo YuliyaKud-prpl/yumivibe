@@ -47,8 +47,9 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const spotify = useSpotify();
   const accent = dashboard.accentColor ?? '#237227';
   const savedUrl = (block.content.embedUrl as string) ?? '';
+  const FALLBACK_URL = 'https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn';
   const [urlInput, setUrlInput] = useState(savedUrl);
-  const [userPickedUrl, setUserPickedUrl] = useState(!!savedUrl);
+  const [userPickedUrl, setUserPickedUrl] = useState(!!savedUrl && savedUrl !== FALLBACK_URL);
   const [embedUrl, setEmbedUrl] = useState<string | null>(() =>
     savedUrl ? toEmbedUrl(savedUrl) ?? savedUrl : null
   );
@@ -82,17 +83,18 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
 
   const loadEmbed = useCallback((url?: string) => {
     const trimmed = (url ?? urlInput).trim();
-    const fallback = 'https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn';
     const isFallback = !trimmed;
-    const target = trimmed || (spotify.isConnected ? '' : fallback);
+    const target = trimmed || (spotify.isConnected ? '' : FALLBACK_URL);
     if (!target) return; // Connected with no URL — just resume
     const embed = toEmbedUrl(target);
     if (!embed) { setError('Invalid Spotify URL'); setEmbedUrl(null); return; }
     setError(null);
     setEmbedUrl(embed);
     setUrlInput(target);
-    if (!isFallback) setUserPickedUrl(true);
-    onUpdate({ ...block.content, embedUrl: target });
+    if (!isFallback) {
+      setUserPickedUrl(true);
+      onUpdate({ ...block.content, embedUrl: target });
+    }
 
     if (spotify.isConnected && spotify.isReady) {
       const uri = toSpotifyUri(target);
