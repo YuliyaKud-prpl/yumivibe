@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { fromCatch } from '@/lib/utils/apiResponse';
 import { AppError } from '@/lib/utils/AppError';
@@ -15,18 +15,18 @@ export async function GET(request: NextRequest) {
     const state = request.nextUrl.searchParams.get('state');
     const storedState = request.cookies.get('spotify_oauth_state')?.value;
     if (!state || !storedState || state !== storedState) {
-      return Response.redirect(`${origin}?spotify_error=state_mismatch`);
+      return NextResponse.redirect(`${origin}?spotify_error=state_mismatch`);
     }
 
     const error = request.nextUrl.searchParams.get('error');
     if (error) {
-      return Response.redirect(`${origin}?spotify_error=${error}`);
+      return NextResponse.redirect(`${origin}?spotify_error=${error}`);
     }
 
     const rawCode = request.nextUrl.searchParams.get('code');
     const parsed = callbackQuerySchema.safeParse({ code: rawCode });
     if (!parsed.success) {
-      return Response.redirect(`${origin}?spotify_error=no_code`);
+      return NextResponse.redirect(`${origin}?spotify_error=no_code`);
     }
 
     const { code } = parsed.data;
@@ -65,16 +65,19 @@ export async function GET(request: NextRequest) {
     });
 
     // Clear the state cookie and redirect with hash fragment
-    const response = Response.redirect(`${origin}/#${params.toString()}`);
-    response.headers.append(
-      'Set-Cookie',
-      'spotify_oauth_state=; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=0',
-    );
+    const response = NextResponse.redirect(`${origin}/#${params.toString()}`);
+    response.cookies.set('spotify_oauth_state', '', {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: true,
+      maxAge: 0,
+    });
     return response;
   } catch (err) {
     if (err instanceof AppError && err.status >= 500) {
       return fromCatch(err);
     }
-    return Response.redirect(`${origin}?spotify_error=token_failed`);
+    return NextResponse.redirect(`${origin}?spotify_error=token_failed`);
   }
 }

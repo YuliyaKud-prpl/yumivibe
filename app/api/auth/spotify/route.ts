@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 const SCOPES = [
@@ -16,29 +16,37 @@ function generateState(): string {
 }
 
 export async function GET(request: NextRequest) {
-  const clientId = process.env.SPOTIFY_CLIENT_ID;
-  if (!clientId) {
-    return Response.json({ error: 'Spotify not configured' }, { status: 500 });
+  try {
+    const clientId = process.env.SPOTIFY_CLIENT_ID;
+    if (!clientId) {
+      return NextResponse.json({ error: 'Spotify not configured' }, { status: 500 });
+    }
+
+    const origin = request.nextUrl.origin;
+    const redirectUri = `${origin}/api/auth/spotify/callback`;
+
+    const state = generateState();
+
+    const params = new URLSearchParams({
+      response_type: 'code',
+      client_id: clientId,
+      scope: SCOPES,
+      redirect_uri: redirectUri,
+      show_dialog: 'true',
+      state,
+    });
+
+    const redirectUrl = `${SPOTIFY_AUTH_URL}?${params.toString()}`;
+    const response = NextResponse.redirect(redirectUrl);
+    response.cookies.set('spotify_oauth_state', state, {
+      path: '/',
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: true,
+      maxAge: 600,
+    });
+    return response;
+  } catch {
+    return NextResponse.json({ error: 'Failed to start Spotify auth' }, { status: 500 });
   }
-
-  const origin = request.nextUrl.origin;
-  const redirectUri = `${origin}/api/auth/spotify/callback`;
-
-  const state = generateState();
-
-  const params = new URLSearchParams({
-    response_type: 'code',
-    client_id: clientId,
-    scope: SCOPES,
-    redirect_uri: redirectUri,
-    show_dialog: 'true',
-    state,
-  });
-
-  const response = Response.redirect(`${SPOTIFY_AUTH_URL}?${params.toString()}`);
-  response.headers.append(
-    'Set-Cookie',
-    `spotify_oauth_state=${state}; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=600`,
-  );
-  return response;
 }
