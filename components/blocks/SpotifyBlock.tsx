@@ -24,6 +24,17 @@ function toEmbedUrl(url: string): string | null {
   }
 }
 
+function toSpotifyUri(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    const match = parsed.pathname.match(/^\/(track|album|playlist|episode|show)\/([A-Za-z0-9]+)/);
+    if (!match) return null;
+    return `spotify:${match[1]}:${match[2]}`;
+  } catch {
+    return null;
+  }
+}
+
 const PRESETS = [
   { name: 'Lofi Beats', url: 'https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn' },
   { name: 'Deep Focus', url: 'https://open.spotify.com/playlist/37i9dQZF1DWZeKCadgRdKQ' },
@@ -40,19 +51,25 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const rawSavedUrl = (block.content.embedUrl as string) ?? '';
   const savedUrl = rawSavedUrl === FALLBACK_URL ? '' : rawSavedUrl;
   const [urlInput, setUrlInput] = useState(savedUrl);
+  const [userPickedUrl, setUserPickedUrl] = useState(!!savedUrl);
   const [embedUrl, setEmbedUrl] = useState<string | null>(() =>
     savedUrl ? toEmbedUrl(savedUrl) ?? savedUrl : null
   );
   const [error, setError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Voice control — SDK for skip/next, play/pause uses Web API if connected, else embed
+  // Voice control — Web API for connected users, embed postMessage fallback
   useEffect(() => {
     const unsubscribe = subscribeMedia('spotify', (command) => {
       if (spotify.isConnected) {
         if (command === 'next') { spotify.next(); return; }
         if (command === 'previous') { spotify.previous(); return; }
-        if (command === 'play') { spotify.play(); return; }
+        if (command === 'play') {
+          // If user explicitly picked a URL, play that; otherwise resume last context
+          const uri = userPickedUrl && urlInput ? toSpotifyUri(urlInput) : undefined;
+          spotify.play(uri ?? undefined);
+          return;
+        }
         if (command === 'pause') { spotify.pause(); return; }
       }
       // Fallback: embed postMessage
@@ -65,7 +82,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
       }, 300);
     });
     return unsubscribe;
-  }, [spotify]);
+  }, [spotify, urlInput, userPickedUrl]);
 
   const loadEmbed = useCallback((url?: string) => {
     const trimmed = (url ?? urlInput).trim();
@@ -74,6 +91,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     if (!trimmed) {
       setEmbedUrl(null);
       setUrlInput('');
+      setUserPickedUrl(false);
       setError(null);
       onUpdate({ ...block.content, embedUrl: '' });
       return;
@@ -84,8 +102,15 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     setError(null);
     setEmbedUrl(embed);
     setUrlInput(trimmed);
+    setUserPickedUrl(true);
     onUpdate({ ...block.content, embedUrl: trimmed });
-  }, [urlInput, block.content, onUpdate]);
+
+    // If connected, also play via Web API
+    if (spotify.isConnected) {
+      const uri = toSpotifyUri(trimmed);
+      if (uri) spotify.play(uri);
+    }
+  }, [urlInput, block.content, onUpdate, spotify]);
 
   return (
     <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>

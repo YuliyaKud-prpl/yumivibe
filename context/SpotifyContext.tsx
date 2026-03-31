@@ -185,9 +185,18 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
         await spotifyApi('/play', accessToken, 'PUT', body);
       }
     } else {
-      // No URI — resume last context on ANY device (don't transfer to SDK)
-      // This plays whatever the user was last listening to
-      await spotifyApi('/play', accessToken, 'PUT');
+      // No URI — resume last context. Transfer to SDK device if available
+      // so the API has an active device to target.
+      if (deviceId) {
+        await fetch('https://api.spotify.com/v1/me/player', {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_ids: [deviceId], play: true }),
+        });
+      } else {
+        // No SDK device — try resuming on whatever device is active
+        await spotifyApi('/play', accessToken, 'PUT');
+      }
     }
   }, [accessToken, deviceId]);
 
