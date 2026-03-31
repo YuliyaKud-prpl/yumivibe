@@ -46,15 +46,16 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const [error, setError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Voice control — SDK for skip/next, postMessage for play/pause
+  // Voice control — SDK for skip/next, play/pause uses Web API if connected, else embed
   useEffect(() => {
     const unsubscribe = subscribeMedia('spotify', (command) => {
-      if (spotify.isConnected && (command === 'next' || command === 'previous')) {
-        if (command === 'next') spotify.next();
-        else spotify.previous();
-        return;
+      if (spotify.isConnected) {
+        if (command === 'next') { spotify.next(); return; }
+        if (command === 'previous') { spotify.previous(); return; }
+        if (command === 'play') { spotify.play(); return; }
+        if (command === 'pause') { spotify.pause(); return; }
       }
-      // Play/pause via embed postMessage (works reliably)
+      // Fallback: embed postMessage
       if (command !== 'play' && command !== 'pause') return;
       const iframe = iframeRef.current;
       if (!iframe?.contentWindow) return;
@@ -68,17 +69,23 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
 
   const loadEmbed = useCallback((url?: string) => {
     const trimmed = (url ?? urlInput).trim();
-    const target = trimmed || (spotify.isConnected ? '' : FALLBACK_URL);
-    if (!target) return;
-    const embed = toEmbedUrl(target);
+
+    // Empty input — reset to empty state
+    if (!trimmed) {
+      setEmbedUrl(null);
+      setUrlInput('');
+      setError(null);
+      onUpdate({ ...block.content, embedUrl: '' });
+      return;
+    }
+
+    const embed = toEmbedUrl(trimmed);
     if (!embed) { setError('Invalid Spotify URL'); setEmbedUrl(null); return; }
     setError(null);
     setEmbedUrl(embed);
-    setUrlInput(target);
-    if (trimmed) {
-      onUpdate({ ...block.content, embedUrl: target });
-    }
-  }, [urlInput, block.content, onUpdate, spotify]);
+    setUrlInput(trimmed);
+    onUpdate({ ...block.content, embedUrl: trimmed });
+  }, [urlInput, block.content, onUpdate]);
 
   return (
     <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>
