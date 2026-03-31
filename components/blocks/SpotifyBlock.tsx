@@ -58,7 +58,8 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     const unsubscribe = subscribeMedia('spotify', (command) => {
       if (spotify.isConnected && spotify.isReady) {
         if (command === 'play') {
-          const uri = urlInput ? toSpotifyUri(urlInput) : undefined;
+          const url = urlInput || DEFAULT_PLAYLIST;
+          const uri = toSpotifyUri(url);
           spotify.play(uri ?? undefined);
         }
         else if (command === 'pause') spotify.pause();
@@ -77,18 +78,20 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     return unsubscribe;
   }, [spotify, urlInput]);
 
+  const DEFAULT_PLAYLIST = 'https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn';
+
   const loadEmbed = useCallback((url?: string) => {
     const trimmed = (url ?? urlInput).trim();
-    if (!trimmed) { setError('Please enter a Spotify URL'); return; }
-    const embed = toEmbedUrl(trimmed);
+    const target = trimmed || DEFAULT_PLAYLIST;
+    const embed = toEmbedUrl(target);
     if (!embed) { setError('Invalid Spotify URL'); setEmbedUrl(null); return; }
     setError(null);
     setEmbedUrl(embed);
-    setUrlInput(trimmed);
-    onUpdate({ ...block.content, embedUrl: trimmed });
+    setUrlInput(target);
+    onUpdate({ ...block.content, embedUrl: target });
 
     if (spotify.isConnected && spotify.isReady) {
-      const uri = toSpotifyUri(trimmed);
+      const uri = toSpotifyUri(target);
       if (uri) spotify.play(uri);
     }
   }, [urlInput, block.content, onUpdate, spotify]);
