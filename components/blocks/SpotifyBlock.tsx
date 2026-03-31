@@ -42,12 +42,13 @@ const PRESETS = [
   { name: 'Jazz Vibes', url: 'https://open.spotify.com/playlist/37i9dQZF1DX0SM0LYsmbMT' },
 ];
 
+const FALLBACK_URL = 'https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn';
+
 export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const { dashboard } = useDashboardContext();
   const spotify = useSpotify();
   const accent = dashboard.accentColor ?? '#237227';
   const savedUrl = (block.content.embedUrl as string) ?? '';
-  const FALLBACK_URL = 'https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn';
   const [urlInput, setUrlInput] = useState(savedUrl);
   const [userPickedUrl, setUserPickedUrl] = useState(!!savedUrl && savedUrl !== FALLBACK_URL);
   const [embedUrl, setEmbedUrl] = useState<string | null>(() =>
@@ -79,7 +80,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
       }
     });
     return unsubscribe;
-  }, [spotify, urlInput]);
+  }, [spotify, urlInput, userPickedUrl]);
 
   const loadEmbed = useCallback((url?: string) => {
     const trimmed = (url ?? urlInput).trim();

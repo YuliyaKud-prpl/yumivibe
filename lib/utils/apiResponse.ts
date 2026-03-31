@@ -44,8 +44,12 @@ export const fromCatch = (
     return error(caught);
   }
 
-  const fallback = AppError.internal(
-    caught instanceof Error ? caught.message : 'An unexpected error occurred'
-  );
+  const isProduction = process.env.NODE_ENV === 'production';
+  const message = isProduction
+    ? 'An unexpected error occurred'
+    : caught instanceof Error
+      ? caught.message
+      : 'An unexpected error occurred';
+  const fallback = AppError.internal(message);
   return error(fallback);
 };

@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { weatherQuerySchema } from '@/lib/validators/weatherSchemas';
 import { getWeatherForCity, getWeatherByCoords } from '@/lib/services/weatherService';
 import { success, fromCatch } from '@/lib/utils/apiResponse';
+import { AppError } from '@/lib/utils/AppError';
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,10 +14,9 @@ export async function GET(request: NextRequest) {
 
     const parsed = weatherQuerySchema.safeParse(params);
     if (!parsed.success) {
-      return Response.json(
-        { error: { code: 'VALIDATION_ERROR', message: 'Invalid query parameters', status: 400 } },
-        { status: 400 },
-      );
+      throw AppError.validation('Invalid query parameters', {
+        issues: parsed.error.issues,
+      });
     }
 
     const query = parsed.data;

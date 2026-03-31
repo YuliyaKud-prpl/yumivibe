@@ -33,7 +33,7 @@ describe('POST /api/auth/register', () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         email: 'test@example.com',
-        password: 'securepass1',
+        password: 'secure1pass',
         displayName: 'Test User',
       }),
     });
@@ -46,7 +46,7 @@ describe('POST /api/auth/register', () => {
     expect(body.data.user.email).toBe('test@example.com');
     expect(mockRegister).toHaveBeenCalledWith(
       'test@example.com',
-      'securepass1',
+      'secure1pass',
       'Test User',
     );
   });
@@ -58,7 +58,7 @@ describe('POST /api/auth/register', () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         email: 'not-an-email',
-        password: 'securepass1',
+        password: 'secure1pass',
       }),
     });
 
@@ -92,7 +92,7 @@ describe('POST /api/auth/register', () => {
     const request = new Request('http://localhost/api/auth/register', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ password: 'securepass1' }),
+      body: JSON.stringify({ password: 'secure1pass' }),
     });
 
     const res = await POST(request as never);
@@ -113,7 +113,7 @@ describe('POST /api/auth/register', () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         email: 'existing@example.com',
-        password: 'securepass1',
+        password: 'secure1pass',
       }),
     });
 
@@ -142,7 +142,7 @@ describe('POST /api/auth/login', () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         email: 'test@example.com',
-        password: 'securepass1',
+        password: 'secure1pass',
       }),
     });
 
@@ -153,7 +153,7 @@ describe('POST /api/auth/login', () => {
     expect(body.data.token).toBe('jwt-token-456');
     expect(mockLogin).toHaveBeenCalledWith(
       'test@example.com',
-      'securepass1',
+      'secure1pass',
     );
   });
 
@@ -201,7 +201,7 @@ describe('POST /api/auth/login', () => {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         email: 'bad-email',
-        password: 'securepass1',
+        password: 'secure1pass',
       }),
     });
 

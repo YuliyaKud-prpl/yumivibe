@@ -11,11 +11,12 @@ const validateBlockType = (type: string): void => {
 };
 
 const verifyDashboardOwnership = async (
-  dashboardId: string
+  dashboardId: string,
+  userId: string
 ): Promise<void> => {
   const result = await query<{ id: string }>(
-    `SELECT id FROM dashboards WHERE id = $1`,
-    [dashboardId]
+    `SELECT id FROM dashboards WHERE id = $1 AND user_id = $2`,
+    [dashboardId, userId]
   );
   if (result.rows.length === 0) {
     throw AppError.dashboardNotFound(dashboardId);
@@ -24,7 +25,8 @@ const verifyDashboardOwnership = async (
 
 export const getBlock = async (
   blockId: string,
-  dashboardId: string
+  dashboardId: string,
+  userId: string
 ): Promise<Block> => {
   try {
     const result = await query<BlockRow>(
@@ -43,10 +45,11 @@ export const getBlock = async (
 
 export const addBlocks = async (
   dashboardId: string,
+  userId: string,
   blocks: Array<{ type: string; title?: string }>
 ): Promise<Block[]> => {
   try {
-    await verifyDashboardOwnership(dashboardId);
+    await verifyDashboardOwnership(dashboardId, userId);
 
     for (const block of blocks) {
       validateBlockType(block.type);
@@ -82,10 +85,11 @@ export const addBlocks = async (
 
 export const removeBlocks = async (
   dashboardId: string,
+  userId: string,
   blockIds: string[]
 ): Promise<void> => {
   try {
-    await verifyDashboardOwnership(dashboardId);
+    await verifyDashboardOwnership(dashboardId, userId);
 
     if (blockIds.length === 0) return;
 
@@ -121,10 +125,11 @@ interface BlockUpdate {
 
 export const updateBlocks = async (
   dashboardId: string,
+  userId: string,
   updates: BlockUpdate[]
 ): Promise<Block[]> => {
   try {
-    await verifyDashboardOwnership(dashboardId);
+    await verifyDashboardOwnership(dashboardId, userId);
 
     const updated: Block[] = [];
 
@@ -151,7 +156,7 @@ export const updateBlocks = async (
         addField('layout_h', update.layout_h);
 
       if (setClauses.length === 0) {
-        const block = await getBlock(update.id, dashboardId);
+        const block = await getBlock(update.id, dashboardId, userId);
         updated.push(block);
         continue;
       }

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 
 interface BackgroundSearchTabProps {
-  onBackgroundChange: (background: string, backgroundType: 'unsplash') => void;
+  onBackgroundChange: (background: string, backgroundType: 'gradient') => void;
   currentBackground?: string;
   onClose: () => void;
 }
@@ -60,7 +60,7 @@ export function BackgroundSearchTab({
     : CURATED_IMAGES;
 
   const handleSelect = (gradient: string) => {
-    onBackgroundChange(gradient, 'unsplash');
+    onBackgroundChange(gradient, 'gradient');
     onClose();
   };
 
@@ -123,10 +123,6 @@ export function BackgroundSearchTab({
           No results for &quot;{query}&quot;
         </p>
       )}
-
-      <p className="text-center text-[10px] text-on-surface-variant/40">
-        Powered by Unsplash
-      </p>
     </div>
   );
 }

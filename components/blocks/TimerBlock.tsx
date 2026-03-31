@@ -125,13 +125,6 @@ export function TimerBlock({ block, onUpdate }: BlockProps) {
             <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>pause</span>
           </button>
         )}
-        <button
-          onClick={pause}
-          className="w-12 h-12 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-90"
-          title="Pause"
-        >
-          <span className="material-symbols-outlined">pause</span>
-        </button>
       </div>
       <div className="flex items-center gap-2 text-xs text-on-surface-variant mt-6">
         <label className="font-medium">Minutes:</label>

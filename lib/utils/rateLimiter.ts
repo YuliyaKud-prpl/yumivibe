@@ -58,14 +58,14 @@ const ONE_MINUTE_MS = 60_000;
 const ONE_HOUR_MS = 3_600_000;
 const ONE_DAY_MS = 86_400_000;
 
-export const checkGeminiLimit = (clientKey = 'gemini'): RateLimitResult =>
-  checkRateLimit(clientKey, 15, ONE_MINUTE_MS);
+export const checkGeminiLimit = (userId?: string): RateLimitResult =>
+  checkRateLimit(userId ? `gemini:${userId}` : 'gemini', 15, ONE_MINUTE_MS);
 
-export const checkUnsplashLimit = (clientKey = 'unsplash'): RateLimitResult =>
-  checkRateLimit(clientKey, 50, ONE_HOUR_MS);
+export const checkUnsplashLimit = (userId?: string): RateLimitResult =>
+  checkRateLimit(userId ? `unsplash:${userId}` : 'unsplash', 50, ONE_HOUR_MS);
 
-export const checkWeatherLimit = (clientKey = 'weather'): RateLimitResult =>
-  checkRateLimit(clientKey, 1000, ONE_DAY_MS);
+export const checkWeatherLimit = (userId?: string): RateLimitResult =>
+  checkRateLimit(userId ? `weather:${userId}` : 'weather', 1000, ONE_DAY_MS);
 
 export const resetRateLimits = (): void => {
   store.clear();

@@ -10,7 +10,12 @@ import {
   type ReactNode,
 } from 'react';
 import { loadFromStorage, saveToStorage, removeFromStorage } from '@/utils/storage';
+import { useSpotifyPlayer } from '@/hooks/useSpotifyPlayer';
 
+// TODO [C2/C3 – Production Hardening]: Spotify tokens are stored in localStorage,
+// which is vulnerable to XSS. Migrate to httpOnly cookies set by the server.
+// This requires refactoring the OAuth callback to set cookies server-side and
+// updating apiClient to stop manually attaching Authorization headers.
 const SPOTIFY_TOKEN_KEY = 'yumivibe-spotify-token';
 const SPOTIFY_REFRESH_KEY = 'yumivibe-spotify-refresh';
 const SPOTIFY_EXPIRY_KEY = 'yumivibe-spotify-expiry';
@@ -65,11 +70,9 @@ interface SpotifyProviderProps {
 export function SpotifyProvider({ children }: SpotifyProviderProps) {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
-  const [deviceId, setDeviceId] = useState<string | null>(null);
-  const [isReady, setIsReady] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null);
-  const playerRef = useRef<Spotify.Player | null>(null);
   const refreshTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const { player, deviceId, isReady, currentTrack } = useSpotifyPlayer(accessToken);
 
   // Load tokens from localStorage on mount
   useEffect(() => {
@@ -86,10 +89,12 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
     }
   }, []);
 
-  // Check URL params for tokens from OAuth callback
+  // C1: Read tokens from hash fragments (not query params) after OAuth callback
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
+    const hash = window.location.hash.substring(1);
+    if (!hash) return;
+    const params = new URLSearchParams(hash);
     const token = params.get('spotify_access_token');
     const refresh = params.get('spotify_refresh_token');
     const expiresIn = params.get('spotify_expires_in');
@@ -103,12 +108,8 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
       saveToStorage(SPOTIFY_EXPIRY_KEY, expiry);
       scheduleRefresh(parseInt(expiresIn, 10) * 1000 - 60_000, refresh);
 
-      // Clean URL
-      const url = new URL(window.location.href);
-      url.searchParams.delete('spotify_access_token');
-      url.searchParams.delete('spotify_refresh_token');
-      url.searchParams.delete('spotify_expires_in');
-      window.history.replaceState({}, '', url.pathname);
+      // Clean URL — remove hash fragment
+      window.history.replaceState({}, '', window.location.pathname);
     }
   }, []);
 
@@ -140,98 +141,20 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
     }
   };
 
-  // Initialize Web Playback SDK
-  useEffect(() => {
-    if (!accessToken) return;
-
-    const script = document.getElementById('spotify-sdk');
-    if (!script) {
-      const s = document.createElement('script');
-      s.id = 'spotify-sdk';
-      s.src = 'https://sdk.scdn.co/spotify-player.js';
-      document.body.appendChild(s);
-    }
-
-    window.onSpotifyWebPlaybackSDKReady = () => {
-      const player = new Spotify.Player({
-        name: 'YumiVibe',
-        getOAuthToken: (cb: (token: string) => void) => {
-          const token = loadFromStorage<string>(SPOTIFY_TOKEN_KEY);
-          if (token) cb(token);
-        },
-        volume: 0.5,
-      });
-
-      player.addListener('ready', (data) => {
-        setDeviceId(data.device_id as string);
-        setIsReady(true);
-      });
-
-      player.addListener('not_ready', () => {
-        setIsReady(false);
-        setDeviceId(null);
-      });
-
-      player.addListener('player_state_changed', (state) => {
-        if (!state) {
-          setCurrentTrack(null);
-          return;
-        }
-        const s = state as Record<string, unknown>;
-        const trackWindow = s.track_window as Record<string, unknown> | undefined;
-        const current = trackWindow?.current_track as Record<string, unknown> | undefined;
-        if (current) {
-          const artists = current.artists as Array<{ name: string }> | undefined;
-          const album = current.album as Record<string, unknown> | undefined;
-          const images = album?.images as Array<{ url: string }> | undefined;
-          setCurrentTrack({
-            name: (current.name as string) ?? 'Unknown',
-            artist: artists?.map((a) => a.name).join(', ') ?? 'Unknown',
-            album: (album?.name as string) ?? '',
-            albumArt: images?.[0]?.url ?? null,
-            durationMs: (s.duration as number) ?? 0,
-            positionMs: (s.position as number) ?? 0,
-            isPlaying: !(s.paused as boolean),
-          });
-        }
-      });
-
-      player.connect();
-      playerRef.current = player;
-    };
-
-    // If SDK already loaded
-    if (window.Spotify?.Player) {
-      window.onSpotifyWebPlaybackSDKReady();
-    }
-
-    return () => {
-      if (playerRef.current) {
-        playerRef.current.disconnect();
-        playerRef.current = null;
-        setIsReady(false);
-        setDeviceId(null);
-      }
-    };
-  }, [accessToken]);
-
   const connect = useCallback(() => {
     window.location.href = '/api/auth/spotify';
   }, []);
 
   const disconnect = useCallback(() => {
-    if (playerRef.current) {
-      playerRef.current.disconnect();
-      playerRef.current = null;
+    if (player) {
+      player.disconnect();
     }
     setAccessToken(null);
     setRefreshToken(null);
-    setDeviceId(null);
-    setIsReady(false);
     removeFromStorage(SPOTIFY_TOKEN_KEY);
     removeFromStorage(SPOTIFY_REFRESH_KEY);
     removeFromStorage(SPOTIFY_EXPIRY_KEY);
-  }, []);
+  }, [player]);
 
   const play = useCallback(async (uri?: string) => {
     if (!accessToken || !deviceId) return;

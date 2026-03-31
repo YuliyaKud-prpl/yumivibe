@@ -10,7 +10,7 @@ describe('authSchemas', () => {
     it('accepts valid registration with email and password', () => {
       const result = registerSchema.safeParse({
         email: 'user@example.com',
-        password: 'securepass1',
+        password: 'secure1pass',
       });
       expect(result.success).toBe(true);
     });
@@ -18,7 +18,7 @@ describe('authSchemas', () => {
     it('accepts valid registration with displayName', () => {
       const result = registerSchema.safeParse({
         email: 'user@example.com',
-        password: 'securepass1',
+        password: 'secure1pass',
         displayName: 'Yuliya',
       });
       expect(result.success).toBe(true);
@@ -29,7 +29,7 @@ describe('authSchemas', () => {
 
     it('rejects missing email', () => {
       const result = registerSchema.safeParse({
-        password: 'securepass1',
+        password: 'secure1pass',
       });
       expect(result.success).toBe(false);
     });
@@ -44,7 +44,7 @@ describe('authSchemas', () => {
     it('rejects invalid email format', () => {
       const result = registerSchema.safeParse({
         email: 'not-an-email',
-        password: 'securepass1',
+        password: 'secure1pass',
       });
       expect(result.success).toBe(false);
     });
@@ -52,7 +52,7 @@ describe('authSchemas', () => {
     it('rejects email without domain', () => {
       const result = registerSchema.safeParse({
         email: 'user@',
-        password: 'securepass1',
+        password: 'secure1pass',
       });
       expect(result.success).toBe(false);
     });
@@ -65,18 +65,34 @@ describe('authSchemas', () => {
       expect(result.success).toBe(false);
     });
 
-    it('accepts password exactly 8 characters', () => {
+    it('accepts password exactly 8 characters with complexity', () => {
+      const result = registerSchema.safeParse({
+        email: 'user@example.com',
+        password: 'abcdef1x',
+      });
+      expect(result.success).toBe(true);
+    });
+
+    it('rejects password without letters', () => {
       const result = registerSchema.safeParse({
         email: 'user@example.com',
         password: '12345678',
       });
-      expect(result.success).toBe(true);
+      expect(result.success).toBe(false);
+    });
+
+    it('rejects password without digit', () => {
+      const result = registerSchema.safeParse({
+        email: 'user@example.com',
+        password: 'nodigitshere',
+      });
+      expect(result.success).toBe(false);
     });
 
     it('rejects displayName longer than 100 characters', () => {
       const result = registerSchema.safeParse({
         email: 'user@example.com',
-        password: 'securepass1',
+        password: 'secure1pass',
         displayName: 'a'.repeat(101),
       });
       expect(result.success).toBe(false);
@@ -85,7 +101,7 @@ describe('authSchemas', () => {
     it('accepts empty object for displayName (optional)', () => {
       const result = registerSchema.safeParse({
         email: 'user@example.com',
-        password: 'securepass1',
+        password: 'secure1pass',
       });
       expect(result.success).toBe(true);
       if (result.success) {
@@ -160,19 +176,12 @@ describe('authSchemas', () => {
       expect(result.success).toBe(true);
     });
 
-    it('accepts role update to admin', () => {
+    it('ignores unknown fields like role', () => {
       const result = updateUserSchema.safeParse({ role: 'admin' });
       expect(result.success).toBe(true);
-    });
-
-    it('accepts role update to user', () => {
-      const result = updateUserSchema.safeParse({ role: 'user' });
-      expect(result.success).toBe(true);
-    });
-
-    it('rejects invalid role', () => {
-      const result = updateUserSchema.safeParse({ role: 'superadmin' });
-      expect(result.success).toBe(false);
+      if (result.success) {
+        expect(result.data).not.toHaveProperty('role');
+      }
     });
 
     it('rejects displayName longer than 100 characters', () => {

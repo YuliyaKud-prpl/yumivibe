@@ -11,6 +11,10 @@ import {
 } from 'react';
 import { loadFromStorage, saveToStorage, removeFromStorage } from '@/utils/storage';
 
+// TODO [C2/C3 – Production Hardening]: JWT auth token is stored in localStorage,
+// which is vulnerable to XSS. Migrate to httpOnly cookies set by the server.
+// This requires the login/register API routes to set cookies, and apiClient
+// to stop manually attaching Authorization headers.
 const AUTH_TOKEN_KEY = 'yumivibe-auth-token';
 const AUTH_USER_KEY = 'yumivibe-auth-user';
 
