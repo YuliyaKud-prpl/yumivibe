@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     const response = Response.redirect(`${origin}/#${params.toString()}`);
     response.headers.append(
       'Set-Cookie',
-      'spotify_oauth_state=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0',
+      'spotify_oauth_state=; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=0',
     );
     return response;
   } catch (err) {

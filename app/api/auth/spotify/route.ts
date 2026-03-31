@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   const response = Response.redirect(`${SPOTIFY_AUTH_URL}?${params.toString()}`);
   response.headers.append(
     'Set-Cookie',
-    `spotify_oauth_state=${state}; Path=/; HttpOnly; SameSite=Lax; Max-Age=600`,
+    `spotify_oauth_state=${state}; Path=/; HttpOnly; SameSite=Lax; Secure; Max-Age=600`,
   );
   return response;
 }

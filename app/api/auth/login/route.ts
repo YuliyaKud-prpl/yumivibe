@@ -24,10 +24,17 @@ export async function POST(request: NextRequest) {
 
     const { email, password } = parsed.data;
 
-    // H5: Rate limit login attempts per email to prevent brute force
-    const rateKey = `login:${email.toLowerCase()}`;
-    const { allowed, resetAt } = checkRateLimit(rateKey, LOGIN_RATE_LIMIT, LOGIN_WINDOW_MS);
-    if (!allowed) {
+    // Rate limit per email (prevents brute force on specific account)
+    const emailKey = `login:${email.toLowerCase()}`;
+    const emailLimit = checkRateLimit(emailKey, LOGIN_RATE_LIMIT, LOGIN_WINDOW_MS);
+
+    // Rate limit per IP (prevents distributed attacks)
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+    const ipKey = `login-ip:${ip}`;
+    const ipLimit = checkRateLimit(ipKey, 20, LOGIN_WINDOW_MS);
+
+    if (!emailLimit.allowed || !ipLimit.allowed) {
+      const resetAt = Math.max(emailLimit.resetAt, ipLimit.resetAt);
       const retryAfterSec = Math.ceil((resetAt - Date.now()) / 1000);
       throw new AppError(
         'RATE_LIMIT_LOGIN',
