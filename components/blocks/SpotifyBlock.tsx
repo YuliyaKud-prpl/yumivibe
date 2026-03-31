@@ -173,24 +173,57 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
         </>
       ) : (
         <>
-          {/* Quick picks */}
-          <div className="mb-3">
-            <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant/60 mb-2">
-              Quick picks
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {PRESETS.map((p) => (
+          {/* Now Playing — when connected, no embed, SDK is playing */}
+          {spotify.isConnected && spotify.currentTrack ? (
+            <div className="flex-1 flex flex-col items-center justify-center min-h-0 mb-3">
+              {spotify.currentTrack.albumArt && (
+                <img
+                  src={spotify.currentTrack.albumArt}
+                  alt={spotify.currentTrack.album}
+                  className="w-24 h-24 rounded-xl shadow-lg mb-3 object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              )}
+              <p className="text-sm font-bold text-on-surface text-center truncate w-full">
+                {spotify.currentTrack.name}
+              </p>
+              <p className="text-xs text-on-surface-variant text-center truncate w-full">
+                {spotify.currentTrack.artist}
+              </p>
+              <div className="flex items-center gap-5 mt-3">
+                <button onClick={spotify.previous} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-lg cursor-pointer">skip_previous</button>
                 <button
-                  key={p.name}
-                  onClick={() => loadEmbed(p.url)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-sm text-on-surface-variant transition-colors cursor-pointer"
+                  onClick={spotify.togglePlay}
+                  className="w-10 h-10 flex items-center justify-center rounded-full text-white cursor-pointer"
+                  style={{ backgroundColor: accent }}
                 >
-                  <span className="material-symbols-outlined text-base" style={{ color: accent }}>play_circle</span>
-                  {p.name}
+                  <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 1" }}>
+                    {spotify.currentTrack.isPlaying ? 'pause' : 'play_arrow'}
+                  </span>
                 </button>
-              ))}
+                <button onClick={spotify.next} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-lg cursor-pointer">skip_next</button>
+              </div>
             </div>
-          </div>
+          ) : (
+            /* Quick picks */
+            <div className="mb-3">
+              <p className="text-xs font-bold uppercase tracking-wider text-on-surface-variant/60 mb-2">
+                Quick picks
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {PRESETS.map((p) => (
+                  <button
+                    key={p.name}
+                    onClick={() => loadEmbed(p.url)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg bg-surface-container-low hover:bg-surface-container-high text-sm text-on-surface-variant transition-colors cursor-pointer"
+                  >
+                    <span className="material-symbols-outlined text-base" style={{ color: accent }}>play_circle</span>
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Connection status */}
           {spotify.isConnected ? (
