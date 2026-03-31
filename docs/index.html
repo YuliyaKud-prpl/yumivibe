@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YumiVibe — The Journey Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #1C1B16; color: #FDFCF7; overflow: hidden; }
+
+  .slide { display: none; width: 100vw; height: 100vh; padding: 60px 80px; flex-direction: column; justify-content: center; position: relative; }
+  .slide.active { display: flex; }
+
+  /* Slide backgrounds */
+  .bg-green { background: linear-gradient(135deg, #0a2e0b, #1a5c1e 50%, #237227); }
+  .bg-warm { background: linear-gradient(135deg, #2a1a0d, #5c3a1e 50%, #8C5A3C); }
+  .bg-blue { background: linear-gradient(135deg, #0a1a2e, #1a3c5c 50%, #176B87); }
+  .bg-dark { background: linear-gradient(135deg, #1C1B16, #2a2920 50%, #3a3830); }
+  .bg-amber { background: linear-gradient(135deg, #2a2010, #5c4a1e 50%, #FFAA00); }
+  .bg-title { background: linear-gradient(135deg, #0d3310, #237227 40%, #519A66 70%, #FFD786); }
+
+  /* Typography */
+  h1 { font-size: 64px; font-weight: 800; line-height: 1.1; margin-bottom: 24px; letter-spacing: -2px; }
+  h2 { font-size: 44px; font-weight: 700; margin-bottom: 32px; letter-spacing: -1px; }
+  h3 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
+  p, li { font-size: 22px; line-height: 1.6; color: rgba(253,252,247,0.85); }
+  .subtitle { font-size: 28px; color: #FFD786; font-weight: 600; margin-bottom: 40px; }
+  .small { font-size: 18px; color: rgba(253,252,247,0.6); }
+  .accent { color: #FFD786; }
+  .green { color: #7BC67F; }
+  .blue { color: #86B6F6; }
+  .warm { color: #F3E4C9; }
+
+  ul { list-style: none; padding: 0; }
+  ul li { padding: 8px 0; padding-left: 28px; position: relative; }
+  ul li::before { content: '→'; position: absolute; left: 0; color: #FFD786; font-weight: 700; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; }
+
+  .card { background: rgba(255,255,255,0.08); border-radius: 20px; padding: 32px; border: 1px solid rgba(255,255,255,0.1); }
+  .card h3 { font-size: 22px; margin-bottom: 12px; }
+  .card p { font-size: 18px; }
+
+  .badge { display: inline-block; background: rgba(255,215,134,0.15); color: #FFD786; padding: 6px 16px; border-radius: 100px; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px; }
+
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 40px; }
+  .stat { text-align: center; }
+  .stat .num { font-size: 48px; font-weight: 800; color: #FFD786; }
+  .stat .label { font-size: 16px; color: rgba(253,252,247,0.6); margin-top: 4px; }
+
+  .tech-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+  .tech { background: rgba(255,255,255,0.06); border-radius: 12px; padding: 16px 20px; font-size: 16px; display: flex; align-items: center; gap: 12px; }
+  .tech .t-label { color: rgba(253,252,247,0.5); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .tech .t-value { font-weight: 700; }
+
+  .timeline { position: relative; padding-left: 32px; border-left: 3px solid rgba(255,215,134,0.3); }
+  .timeline .step { margin-bottom: 24px; position: relative; }
+  .timeline .step::before { content: ''; position: absolute; left: -39px; top: 6px; width: 14px; height: 14px; border-radius: 50%; background: #FFD786; }
+  .timeline .step h3 { font-size: 20px; color: #FFD786; margin-bottom: 4px; }
+  .timeline .step p { font-size: 17px; }
+
+  .quote { font-size: 36px; font-style: italic; font-weight: 600; line-height: 1.4; color: #FDFCF7; max-width: 800px; }
+  .quote::before { content: '"'; font-size: 80px; color: #FFD786; line-height: 0; vertical-align: -24px; margin-right: 8px; }
+
+  .slide-number { position: absolute; bottom: 30px; right: 40px; font-size: 14px; color: rgba(253,252,247,0.3); font-weight: 600; }
+  .logo { position: absolute; top: 30px; left: 40px; font-size: 18px; font-weight: 800; color: rgba(253,252,247,0.4); letter-spacing: -0.5px; }
+
+  /* Navigation */
+  .nav-hint { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 13px; color: rgba(253,252,247,0.25); z-index: 100; }
+
+  /* Animations */
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+  .slide.active > * { animation: fadeInUp 0.6s ease-out both; }
+  .slide.active > *:nth-child(2) { animation-delay: 0.1s; }
+  .slide.active > *:nth-child(3) { animation-delay: 0.2s; }
+  .slide.active > *:nth-child(4) { animation-delay: 0.3s; }
+  .slide.active > *:nth-child(5) { animation-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<!-- Slide 1: Title -->
+<div class="slide bg-title active" id="s1">
+  <div class="badge">Hackathon Demo</div>
+  <h1>YumiVibe</h1>
+  <p class="subtitle">Your customizable personal dashboard.<br>Productivity. Entertainment. Mood. One place.</p>
+  <p class="small">Next.js 14 · React 18 · TypeScript · PostgreSQL · Tailwind · Spotify SDK · Voice Control</p>
+  <div class="slide-number">1 / 14</div>
+</div>
+
+<!-- Slide 2: The Problem -->
+<div class="slide bg-dark" id="s2">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">The Problem</div>
+  <h2>Every task needs <span class="accent">5+ open tabs</span></h2>
+  <ul>
+    <li>Working out? Timer, playlist, workout video — all in different tabs</li>
+    <li>Studying? Pomodoro, notes, to-dos, background music — scattered everywhere</li>
+    <li>Want to skip a song? Stop what you're doing and find the right tab</li>
+    <li>Notion doesn't play music. Spotify doesn't have timers. Nothing connects them.</li>
+  </ul>
+  <div class="slide-number">2 / 14</div>
+</div>
+
+<!-- Slide 3: The Solution -->
+<div class="slide bg-green" id="s3">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">The Solution</div>
+  <h2>One dashboard. <span class="accent">Everything together.</span></h2>
+  <div class="grid-3" style="margin-top: 32px;">
+    <div class="card">
+      <h3>🎯 Productivity</h3>
+      <p>Pomodoro, timers, to-do lists, notes, weather with AI clothing tips — all in draggable blocks</p>
+    </div>
+    <div class="card">
+      <h3>🎵 Entertainment</h3>
+      <p>YouTube playlists + Spotify SDK player with real skip/next/previous controls</p>
+    </div>
+    <div class="card">
+      <h3>🎤 Voice Control</h3>
+      <p>"Pause", "next song", "mute" — hands-free, perfect for workouts. No wake word needed.</p>
+    </div>
+  </div>
+  <div class="grid-3" style="margin-top: 16px;">
+    <div class="card">
+      <h3>🎨 Customizable</h3>
+      <p>6 color themes, drag & resize blocks, per-dashboard palettes. Make it yours.</p>
+    </div>
+    <div class="card">
+      <h3>☁️ Cloud Synced</h3>
+      <p>Per-user accounts, PostgreSQL backend. Log out, come back — everything persists.</p>
+    </div>
+    <div class="card">
+      <h3>🔒 Production Ready</h3>
+      <p>244 tests, full security audit, JWT auth, rate limiting. Not a demo — a real product.</p>
+    </div>
+  </div>
+  <div class="slide-number">3 / 14</div>
+</div>
+
+<!-- Slide 4: The First Prompt -->
+<div class="slide bg-dark" id="s4">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">The First Prompt</div>
+  <h2>CLAUDE.md was our <span class="accent">north star</span></h2>
+  <div class="grid-2">
+    <div>
+      <ul>
+        <li>Tech stack defined upfront: Next.js 14 + TypeScript + PostgreSQL</li>
+        <li>11 block types specified with exact validation rules</li>
+        <li>Strict rules: no <code>any</code>, files under 300 lines, Zod everywhere</li>
+        <li>API design with error codes, rate limiting, caching</li>
+        <li>Every agent decision traced back to this file</li>
+      </ul>
+    </div>
+    <div class="card" style="font-family: monospace; font-size: 14px; line-height: 1.8; color: rgba(253,252,247,0.7);">
+      <span style="color: #FFD786"># Rules</span><br>
+      - TypeScript strict. No any.<br>
+      - Files under 300 lines.<br>
+      - Every API route has Zod validation.<br>
+      - Parameterized SQL only.<br>
+      - Rate limit all external APIs.<br>
+      - 80%+ test coverage.<br>
+      <span style="color: #FFD786"># Block Types</span><br>
+      greeting, clock, timer, pomodoro,<br>
+      weather, quotes, notes, todos,<br>
+      youtube, spotify, title
+    </div>
+  </div>
+  <div class="slide-number">4 / 14</div>
+</div>
+
+<!-- Slide 5: Build Montage -->
+<div class="slide bg-dark" id="s5">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">The Build Montage</div>
+  <h2>Four phases. <span class="accent">52 commits. Parallel agents.</span></h2>
+  <div class="timeline">
+    <div class="step">
+      <h3>Phase 1 — Frontend · 1 commit · 3 parallel agents</h3>
+      <p>11 blocks, grid, themes, voice control, weather, AI. Agents split: components + grid + tests. First prompt → working UI.</p>
+    </div>
+    <div class="step">
+      <h3>Phase 2 — Backend + Auth · 8 commits · 2 parallel agents</h3>
+      <p>PostgreSQL, API wiring, JWT auth. One agent for DB + routes, another for tests. Plan → implement → fix → verify.</p>
+    </div>
+    <div class="step">
+      <h3>Phase 3 — Spotify · 20 commits · 1 agent + iterations</h3>
+      <p>Hardest part. Embed → OAuth → SDK → unified player. Sequential — each fix depended on previous. Many retries.</p>
+    </div>
+    <div class="step">
+      <h3>Phase 4 — Audit + Polish · 23 commits · 3+3 parallel agents</h3>
+      <p>2 audit agents (security + quality). Then 3 fix agents in parallel. Every change verified with build + 244 tests.</p>
+    </div>
+  </div>
+  <div class="slide-number">5 / 14</div>
+</div>
+
+<!-- Slide 6: Features - Blocks -->
+<div class="slide bg-green" id="s6">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">Features</div>
+  <h2><span class="accent">11</span> block types</h2>
+  <div class="grid-3" style="margin-top: 24px;">
+    <div class="card"><h3>⏰ Clock</h3><p>12/24h with date</p></div>
+    <div class="card"><h3>🍅 Pomodoro</h3><p>Work/break cycles with chimes</p></div>
+    <div class="card"><h3>⏱️ Timer</h3><p>Custom duration, editable label</p></div>
+    <div class="card"><h3>🌤️ Weather</h3><p>Real data + AI clothing tips</p></div>
+    <div class="card"><h3>✅ Todos</h3><p>Add, check, delete tasks</p></div>
+    <div class="card"><h3>📝 Notes</h3><p>Auto-saving text editor</p></div>
+    <div class="card"><h3>💬 Quotes</h3><p>28 quotes + custom mode</p></div>
+    <div class="card"><h3>👋 Greeting</h3><p>Time-aware, themed</p></div>
+    <div class="card"><h3>🎬 YouTube</h3><p>Playlist with navigation</p></div>
+    <div class="card"><h3>🎵 Spotify</h3><p>SDK player + voice control</p></div>
+    <div class="card"><h3>📌 Title</h3><p>Editable focus header</p></div>
+    <div class="card" style="border-color: rgba(255,215,134,0.3);"><h3 class="accent">All draggable</h3><p>Resize, rearrange, delete</p></div>
+  </div>
+  <div class="slide-number">6 / 14</div>
+</div>
+
+<!-- Slide 7: Voice Control -->
+<div class="slide bg-amber" id="s7">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">Star Feature</div>
+  <h2>Voice Control — <span style="color:#1C1B16">hands-free</span></h2>
+  <div class="grid-2" style="margin-top: 24px;">
+    <div>
+      <p style="margin-bottom: 24px; font-size: 24px; color: #1C1B16; font-weight: 600;">Click mic. Speak. Done.<br>No wake word. No app switching.</p>
+      <p style="font-size: 20px; color: #3a3520;">Perfect for workouts — control music and video without touching the screen.</p>
+    </div>
+    <div class="card" style="background: rgba(0,0,0,0.15);">
+      <h3 style="margin-bottom: 16px;">Commands</h3>
+      <ul style="font-size: 18px;">
+        <li>"play" / "pause" / "stop"</li>
+        <li>"next song" / "skip"</li>
+        <li>"previous song"</li>
+        <li>"pause video" / "play video"</li>
+        <li>"next video"</li>
+        <li>"mute" / "unmute"</li>
+        <li>"stop everything"</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-number">7 / 14</div>
+</div>
+
+<!-- Slide 8: Live Demo -->
+<div class="slide bg-dark" id="s8">
+  <div class="logo">YumiVibe</div>
+  <div style="text-align: center;">
+    <div class="badge">Live Demo</div>
+    <h1 style="font-size: 80px;">🚀</h1>
+    <h2>Let me show you.</h2>
+    <p style="font-size: 24px; margin-top: 16px;"><a href="https://yumivibe.vercel.app" target="_blank" style="color: #FFD786; text-decoration: none; border-bottom: 2px solid #FFD786;">yumivibe.vercel.app →</a></p>
+  </div>
+  <div class="slide-number">8 / 14</div>
+</div>
+
+<!-- Slide 9: Test Report -->
+<div class="slide bg-blue" id="s9">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">Test Report</div>
+  <h2><span class="accent">244</span> tests · <span class="accent">16</span> files · <span class="accent">100%</span> passing</h2>
+  <div class="grid-3" style="margin-top: 24px;">
+    <div class="card">
+      <h3>Services (89 tests)</h3>
+      <p>Auth · Dashboard · Block · AI · Weather · Background — full CRUD, edge cases, error paths</p>
+    </div>
+    <div class="card">
+      <h3>Validators (52 tests)</h3>
+      <p>Zod schemas for auth, dashboards, blocks — every input shape validated</p>
+    </div>
+    <div class="card">
+      <h3>Utils (59 tests)</h3>
+      <p>AppError · apiResponse · cache with TTL · rate limiter — all utility functions covered</p>
+    </div>
+    <div class="card">
+      <h3>Hooks (19 tests)</h3>
+      <p>useBlocks · useDashboards — React Testing Library with renderHook + act</p>
+    </div>
+    <div class="card">
+      <h3>API Routes (20 tests)</h3>
+      <p>Auth login/register · Dashboard CRUD — mocked services, real HTTP responses</p>
+    </div>
+    <div class="card">
+      <h3>Reliability</h3>
+      <p>Error boundaries per block · graceful degradation: API → localStorage → offline</p>
+    </div>
+  </div>
+  <div class="slide-number">9 / 14</div>
+</div>
+
+<!-- Slide 10: Security Report -->
+<div class="slide bg-warm" id="s10">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">Security Report</div>
+  <h2>Full <span class="accent">OWASP</span> audit. All findings resolved.</h2>
+  <div class="grid-2" style="margin-top: 24px;">
+    <div>
+      <h3 class="accent">What we found & fixed</h3>
+      <ul>
+        <li>Spotify tokens exposed in URL → moved to hash fragments</li>
+        <li>Missing CSRF on OAuth → added state parameter + cookie</li>
+        <li>No brute force protection → rate limiting per email + per IP</li>
+        <li>Missing dashboard ownership check → added userId verification</li>
+        <li>Weak password policy → requires letter + digit</li>
+        <li>Global rate limits → switched to per-user keys</li>
+      </ul>
+    </div>
+    <div>
+      <h3 class="accent">Security layers in place</h3>
+      <ul>
+        <li>JWT auth with scrypt password hashing</li>
+        <li>Zod validation on every API route — no unvalidated input</li>
+        <li>Parameterized SQL everywhere — zero injection risk</li>
+        <li>Security headers: HSTS, X-Frame-Options, Referrer-Policy</li>
+        <li>Spotify OAuth with CSRF state + Secure cookies</li>
+        <li>Error messages sanitized in production</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-number">10 / 14</div>
+</div>
+
+<!-- Slide 11: Code Quality Report -->
+<div class="slide bg-green" id="s11">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">Code Quality Report</div>
+  <h2>Strict rules. <span class="accent">Zero violations.</span></h2>
+  <div class="grid-3" style="margin-top: 24px;">
+    <div class="card">
+      <h3>TypeScript Strict</h3>
+      <p>Zero <code>any</code> types. Zero <code>@ts-ignore</code>. Full type safety across 80+ files.</p>
+    </div>
+    <div class="card">
+      <h3>File Size Limit</h3>
+      <p>Every file under 300 lines. Split early, single responsibility, modular design.</p>
+    </div>
+    <div class="card">
+      <h3>Validation</h3>
+      <p>Zod schemas on every API route. .safeParse() with standard error envelopes.</p>
+    </div>
+    <div class="card">
+      <h3>Architecture</h3>
+      <p>Clear separation: routes → services → database. Hooks, contexts, validators in dedicated layers.</p>
+    </div>
+    <div class="card">
+      <h3>No Shortcuts</h3>
+      <p>No console.log in prod. Named exports only. Parameterized SQL. Rate limiting on all external APIs.</p>
+    </div>
+    <div class="card">
+      <h3>CLAUDE.md Driven</h3>
+      <p>Every rule defined upfront. Every rule enforced. Every audit finding traced back to the spec.</p>
+    </div>
+  </div>
+  <div class="slide-number">11 / 14</div>
+</div>
+
+<!-- Slide 12: Tech Stack -->
+<div class="slide bg-dark" id="s12">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">Tech Stack</div>
+  <h2>Modern. <span class="accent">Production-ready.</span></h2>
+  <div class="tech-grid">
+    <div class="tech"><div><div class="t-label">Framework</div><div class="t-value">Next.js 14 (App Router)</div></div></div>
+    <div class="tech"><div><div class="t-label">Frontend</div><div class="t-value">React 18 + Hooks + Context</div></div></div>
+    <div class="tech"><div><div class="t-label">Language</div><div class="t-value">TypeScript (strict mode)</div></div></div>
+    <div class="tech"><div><div class="t-label">Styling</div><div class="t-value">Tailwind CSS</div></div></div>
+    <div class="tech"><div><div class="t-label">Grid</div><div class="t-value">react-grid-layout</div></div></div>
+    <div class="tech"><div><div class="t-label">Database</div><div class="t-value">PostgreSQL (Neon) + raw SQL</div></div></div>
+    <div class="tech"><div><div class="t-label">Validation</div><div class="t-value">Zod (every API route)</div></div></div>
+    <div class="tech"><div><div class="t-label">Auth</div><div class="t-value">JWT (jose) + scrypt</div></div></div>
+    <div class="tech"><div><div class="t-label">Music</div><div class="t-value">Spotify Web Playback SDK</div></div></div>
+    <div class="tech"><div><div class="t-label">Video</div><div class="t-value">YouTube iframe API</div></div></div>
+    <div class="tech"><div><div class="t-label">Voice</div><div class="t-value">Web Speech API (Chrome)</div></div></div>
+    <div class="tech"><div><div class="t-label">Weather</div><div class="t-value">Open-Meteo (no API key)</div></div></div>
+    <div class="tech"><div><div class="t-label">AI</div><div class="t-value">Claude Haiku (AWS Bedrock)</div></div></div>
+    <div class="tech"><div><div class="t-label">Testing</div><div class="t-value">Vitest + RTL (244 tests)</div></div></div>
+    <div class="tech"><div><div class="t-label">Hosting</div><div class="t-value">Vercel + Neon</div></div></div>
+  </div>
+  <div class="slide-number">12 / 14</div>
+</div>
+
+<!-- Slide 13: Lessons Learned -->
+<div class="slide bg-warm" id="s13">
+  <div class="logo">YumiVibe</div>
+  <div class="badge">Lessons Learned</div>
+  <h2>What <span class="accent">surprised</span> us</h2>
+  <div style="margin-top: 24px;">
+    <ul style="font-size: 20px;">
+      <li><strong>Spotify's embed is a black box.</strong> No skip/next via postMessage. We built the full Web Playback SDK integration to get real voice control.</li>
+      <li><strong>Token security is layers, not a single fix.</strong> Hash fragments, CSRF state, security headers, rate limiting — each protects against a different attack vector.</li>
+      <li><strong>Color theming took 3 iterations.</strong> Global green → neutral gray → per-dashboard accent-derived surfaces. Each dashboard generates its own palette.</li>
+      <li><strong>Parallel agents = superspeed.</strong> 3 audit agents, 3 fix agents simultaneously. Hours of work in minutes.</li>
+      <li><strong>CLAUDE.md pays for itself.</strong> Every rule caught real bugs in the audit. Constraints are guardrails, not overhead.</li>
+    </ul>
+  </div>
+  <div class="slide-number">13 / 14</div>
+</div>
+
+<!-- Slide 14: Thank You -->
+<div class="slide bg-title" id="s14">
+  <div style="text-align: center;">
+    <h1 style="font-size: 72px;">Thank you!</h1>
+    <div class="stat-grid" style="max-width: 700px; margin: 40px auto 0;">
+      <div class="stat"><div class="num">11</div><div class="label">Block types</div></div>
+      <div class="stat"><div class="num">244</div><div class="label">Tests</div></div>
+      <div class="stat"><div class="num">0</div><div class="label">Open findings</div></div>
+      <div class="stat"><div class="num">12</div><div class="label">Voice commands</div></div>
+    </div>
+    <p style="margin-top: 48px; font-size: 28px;"><a href="https://yumivibe.vercel.app" target="_blank" style="color: #FFD786; text-decoration: none; border-bottom: 2px solid #FFD786;">yumivibe.vercel.app</a></p>
+    <p style="margin-top: 8px; font-size: 18px; color: rgba(253,252,247,0.5);">github.com/YuliyaKud-prpl/yumivibe</p>
+  </div>
+  <div class="slide-number">12 / 14</div>
+</div>
+
+<div class="nav-hint">← → Arrow keys to navigate</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let current = 0;
+
+  function goTo(index) {
+    if (index < 0 || index >= slides.length) return;
+    slides[current].classList.remove('active');
+    current = index;
+    slides[current].classList.add('active');
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(slides.length - 1);
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.clientX > window.innerWidth / 2) goTo(current + 1);
+    else goTo(current - 1);
+  });
+</script>
+</body>
+</html>

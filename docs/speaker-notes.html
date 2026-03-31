@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YumiVibe — Speaker Notes</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; background: #FDFCF7; color: #1C1B16; line-height: 1.7; padding: 40px 80px; max-width: 900px; margin: 0 auto; }
+
+  h1 { font-size: 36px; font-weight: 800; margin-bottom: 8px; color: #237227; }
+  h2 { font-size: 22px; font-weight: 700; margin-top: 40px; margin-bottom: 12px; color: #237227; padding-bottom: 8px; border-bottom: 2px solid #C4E8C6; }
+  h3 { font-size: 16px; font-weight: 700; color: #519A66; margin-top: 24px; margin-bottom: 8px; }
+
+  p { font-size: 16px; margin-bottom: 12px; }
+  .subtitle { font-size: 18px; color: #7B7768; margin-bottom: 32px; }
+
+  .slide-section { margin-bottom: 32px; padding: 24px 28px; background: #fff; border-radius: 16px; border: 1px solid #E8E5DC; }
+  .slide-label { display: inline-block; background: #237227; color: white; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .time { display: inline-block; background: #FFD786; color: #5a4010; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px; margin-left: 8px; }
+
+  .say { font-style: italic; color: #237227; font-weight: 600; }
+  .action { color: #8C5A3C; font-weight: 600; font-size: 14px; margin: 8px 0; padding: 8px 12px; background: #FFF8F2; border-radius: 8px; border-left: 3px solid #8C5A3C; }
+
+  .qa { margin-top: 40px; }
+  .qa-item { margin-bottom: 20px; padding: 16px 20px; background: #F0F7F0; border-radius: 12px; }
+  .qa-q { font-weight: 700; color: #237227; margin-bottom: 6px; }
+  .qa-a { font-size: 15px; color: #49454F; }
+
+  @media print {
+    body { padding: 20px 40px; }
+    .slide-section { break-inside: avoid; border: 1px solid #ddd; }
+  }
+</style>
+</head>
+<body>
+
+<h1>YumiVibe — Speaker Notes</h1>
+<p class="subtitle">5 minutes total. Read naturally, not word-for-word. These are talking points.</p>
+
+<!-- Slide 1 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 1 — Title</span><span class="time">5 sec</span>
+  <p>"Hi everyone, I'm Yuliya, and this is YumiVibe."</p>
+</div>
+
+<!-- Slide 2 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 2 — The Problem</span><span class="time">20 sec</span>
+  <p>"So here's the thing — whatever you're doing, whether it's a workout, studying, or just chilling — you end up with five or more tabs open. Timer here, playlist there, to-do list somewhere else.</p>
+  <p>And if you want to skip a song while working out, you have to stop, find the right tab, click something. It breaks your flow every time.</p>
+  <p>There's no single app that combines productivity, entertainment, and mood in one place. Notion doesn't play music. Spotify doesn't have timers. YouTube doesn't have to-do lists. You're constantly switching contexts."</p>
+</div>
+
+<!-- Slide 3 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 3 — The Solution</span><span class="time">15 sec</span>
+  <p>"YumiVibe puts everything in one place. Productivity blocks like timers and to-dos. Entertainment — YouTube and Spotify. Weather with AI outfit suggestions. And the star feature — voice control.</p>
+  <p>Say <span class="say">'pause'</span> and everything stops. Say <span class="say">'next song'</span> and it skips. No hands needed.</p>
+  <p>It's fully customizable — drag blocks, resize them, pick from six color themes. Each user has their own dashboards that persist in the cloud. It works like a real product, not a demo."</p>
+</div>
+
+<!-- Slide 4 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 4 — The First Prompt</span><span class="time">15 sec</span>
+  <p>"We started with a detailed CLAUDE.md — our single source of truth. It defined the tech stack, all eleven block types, strict coding rules — no 'any' types, files under 300 lines, Zod validation on every route.</p>
+  <p>Every decision we made traced back to this file."</p>
+</div>
+
+<!-- Slide 5 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 5 — Build Montage</span><span class="time">20 sec</span>
+  <p>"The build had four phases and 52 commits total.</p>
+  <p>Phase one — frontend. One massive initial prompt gave us all eleven blocks, the drag-and-drop grid, themes, voice control. It worked on the first try.</p>
+  <p>Phase two — backend. About eight commits. PostgreSQL setup, real API wiring, email/password auth. This needed iteration — plan mode, implement, fix, verify.</p>
+  <p>Phase three — Spotify. This was the hardest. Twenty commits. We started with a simple embed, then added OAuth, then the Web Playback SDK, then had to build a unified player for both playlists and user's own music. Not everything worked first try — the embed and SDK kept conflicting. We iterated until it was right.</p>
+  <p>Phase four — audit and polish. Twenty-three commits. Security audit found real issues — we fixed them all. Color theming took three attempts to get right. Every fix verified with build plus tests.</p>
+  <p>We used parallel agents throughout — up to three running simultaneously. Some prompts worked perfectly, some needed multiple iterations. That's the honest journey."</p>
+</div>
+
+<!-- Slide 6 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 6 — Features</span><span class="time">10 sec</span>
+  <p>"Quick overview — eleven block types. Clock, pomodoro, timer, weather with real data and AI clothing tips, todos, notes, quotes, YouTube with playlists, Spotify with full SDK control, greeting, and title. All draggable and resizable."</p>
+</div>
+
+<!-- Slide 7 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 7 — Voice Control</span><span class="time">10 sec</span>
+  <p>"Voice control is the star feature. Click the mic, speak naturally. <span class="say">'Play'</span>, <span class="say">'pause'</span>, <span class="say">'next song'</span>, <span class="say">'mute'</span>. No wake word needed. Perfect for workouts — you never touch the screen."</p>
+</div>
+
+<!-- Slide 8 — LIVE DEMO -->
+<div class="slide-section" style="border-color: #FFD786; border-width: 2px;">
+  <span class="slide-label" style="background: #FFAA00;">Slide 8 — Live Demo</span><span class="time">~90 sec</span>
+
+  <p>"Let me show you how it works."</p>
+
+  <div class="action">→ Open yumivibe.vercel.app in browser</div>
+  <p>"I'm logged in — each user gets their own dashboards stored in PostgreSQL."</p>
+
+  <div class="action">→ Show dashboard list, open one or create from template</div>
+  <p>"I can create from templates — Morning Vibes, Work Focus, Chill & Music — each with its own color palette."</p>
+
+  <div class="action">→ Open a dashboard with YouTube + Spotify blocks</div>
+  <p>"Here's my dashboard. Let me add a YouTube video."</p>
+
+  <div class="action">→ Paste a YouTube URL</div>
+
+  <p>"And Spotify is connected through OAuth — I can see what's playing."</p>
+
+  <div class="action">→ Click mic icon</div>
+  <p>"Now watch — voice control."</p>
+
+  <div class="action">→ Say "play"</div>
+  <p><span class="say">"Play."</span> — Video plays muted, music plays.</p>
+
+  <div class="action">→ Say "next song"</div>
+  <p><span class="say">"Next song."</span> — Skips to next track.</p>
+
+  <div class="action">→ Say "pause"</div>
+  <p><span class="say">"Pause."</span> — Everything stops.</p>
+
+  <div class="action">→ Drag a block, resize another</div>
+  <p>"Everything is draggable and resizable. And it all persists — log out, come back, it's all here."</p>
+
+  <div class="action">→ Switch back to presentation</div>
+</div>
+
+<!-- Slide 9 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 9 — Testing & Security</span><span class="time">15 sec</span>
+  <p>"This isn't just a demo — it's tested like a real product. 244 tests across 16 files. Every service, every hook, every validator, every API route.</p>
+  <p>We ran a full security audit — OWASP Top 10 checks. Found issues with token storage, missing CSRF protection, brute force vulnerability on login. Fixed every single one. Rate limiting per user and per IP, security headers, parameterized SQL everywhere. Zero injection risk."</p>
+</div>
+
+<!-- Slide 10 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 10 — Tech Stack</span><span class="time">10 sec</span>
+  <p>"Quick stack overview — Next.js 14 with React 18, chosen for stability and ecosystem compatibility. TypeScript in strict mode. PostgreSQL on Neon. Spotify Web Playback SDK for real music control. Claude Haiku via AWS Bedrock for AI clothing suggestions. All deployed on Vercel."</p>
+</div>
+
+<!-- Slide 11 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 11 — Lessons Learned</span><span class="time">20 sec</span>
+  <p>"Three things surprised us.</p>
+  <p>First — Spotify's embed is a black box. No skip, no next. We had to build a unified SDK player to get real voice control.</p>
+  <p>Second — security is layers. Hash fragments, CSRF state, rate limiting — each one catches what others miss.</p>
+  <p>And third — CLAUDE.md pays for itself. Every strict rule we wrote upfront caught real bugs during the audit."</p>
+</div>
+
+<!-- Slide 12 -->
+<div class="slide-section">
+  <span class="slide-label">Slide 12 — Thank You</span><span class="time">5 sec</span>
+  <p>"Thank you! The app is live at <strong>yumivibe.vercel.app</strong>. Happy to answer questions."</p>
+</div>
+
+<!-- Q&A -->
+<h2>If Judges Ask Questions</h2>
+
+<div class="qa">
+  <div class="qa-item">
+    <p class="qa-q">"Why Next.js 14 and not 15?"</p>
+    <p class="qa-a">"We chose the stable LTS release. All our dependencies — react-grid-layout, Spotify SDK — are fully compatible. Next.js 15 with React 19 still had ecosystem gaps with third-party packages."</p>
+  </div>
+
+  <div class="qa-item">
+    <p class="qa-q">"Why raw SQL instead of an ORM?"</p>
+    <p class="qa-a">"Full control over queries, no abstraction leaks. With parameterized queries and Zod validation, we get type safety without the overhead of Prisma or Drizzle."</p>
+  </div>
+
+  <div class="qa-item">
+    <p class="qa-q">"How does voice control work?"</p>
+    <p class="qa-a">"Chrome's Web Speech API. Continuous listening, pattern matching on transcripts. Commands route through a pub/sub media event system to YouTube and Spotify blocks."</p>
+  </div>
+
+  <div class="qa-item">
+    <p class="qa-q">"What about mobile?"</p>
+    <p class="qa-a">"The grid is responsive — three breakpoints. Blocks reflow on tablet and stack on mobile. Voice control is Chrome-only though."</p>
+  </div>
+
+  <div class="qa-item">
+    <p class="qa-q">"How do you handle Spotify for non-Premium users?"</p>
+    <p class="qa-a">"They get the embed player — paste a URL, play within the embed. Premium users who connect get the full SDK with skip, next, and voice control."</p>
+  </div>
+
+  <div class="qa-item">
+    <p class="qa-q">"How did you use Claude in the build?"</p>
+    <p class="qa-a">"Claude Code with parallel subagents. Up to three agents running simultaneously for research, code fixes, and testing. The CLAUDE.md file was our prompt foundation — every agent decision traced back to it."</p>
+  </div>
+</div>
+
+</body>
+</html>
