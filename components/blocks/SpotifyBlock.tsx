@@ -48,6 +48,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const accent = dashboard.accentColor ?? '#237227';
   const savedUrl = (block.content.embedUrl as string) ?? '';
   const [urlInput, setUrlInput] = useState(savedUrl);
+  const [userPickedUrl, setUserPickedUrl] = useState(!!savedUrl);
   const [embedUrl, setEmbedUrl] = useState<string | null>(() =>
     savedUrl ? toEmbedUrl(savedUrl) ?? savedUrl : null
   );
@@ -58,9 +59,9 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     const unsubscribe = subscribeMedia('spotify', (command) => {
       if (spotify.isConnected && spotify.isReady) {
         if (command === 'play') {
-          // If connected, resume current playback or play loaded playlist
-          // Don't force a default — let Spotify play user's last context
-          const uri = urlInput ? toSpotifyUri(urlInput) : undefined;
+          // Only play a specific URI if user explicitly picked one
+          // Otherwise resume their last context (liked songs, etc.)
+          const uri = userPickedUrl && urlInput ? toSpotifyUri(urlInput) : undefined;
           spotify.play(uri ?? undefined);
         }
         else if (command === 'pause') spotify.pause();
@@ -82,6 +83,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const loadEmbed = useCallback((url?: string) => {
     const trimmed = (url ?? urlInput).trim();
     const fallback = 'https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn';
+    const isFallback = !trimmed;
     const target = trimmed || (spotify.isConnected ? '' : fallback);
     if (!target) return; // Connected with no URL — just resume
     const embed = toEmbedUrl(target);
@@ -89,6 +91,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     setError(null);
     setEmbedUrl(embed);
     setUrlInput(target);
+    if (!isFallback) setUserPickedUrl(true);
     onUpdate({ ...block.content, embedUrl: target });
 
     if (spotify.isConnected && spotify.isReady) {
