@@ -60,7 +60,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
 
   useEffect(() => {
     const unsubscribe = subscribeMedia('spotify', (command) => {
-      if (spotify.isConnected && spotify.isReady) {
+      if (spotify.isConnected) {
         if (command === 'play') {
           // Only play a specific URI if user explicitly picked one
           // Otherwise resume their last context (liked songs, etc.)
@@ -98,14 +98,14 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
       onUpdate({ ...block.content, embedUrl: target });
     }
 
-    if (spotify.isConnected && spotify.isReady) {
+    if (spotify.isConnected) {
       const uri = toSpotifyUri(target);
       if (uri) spotify.play(uri);
     }
   }, [urlInput, block.content, onUpdate, spotify]);
 
   // Connected mode — show real player
-  if (spotify.isConnected && spotify.isReady) {
+  if (spotify.isConnected) {
     const track = spotify.currentTrack;
     return (
       <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>

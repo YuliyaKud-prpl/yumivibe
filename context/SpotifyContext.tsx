@@ -165,36 +165,35 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
   }, [player]);
 
   const play = useCallback(async (uri?: string) => {
-    if (!accessToken || !deviceId) return;
+    if (!accessToken) return;
 
     if (uri) {
-      // Transfer playback without auto-playing
-      await fetch('https://api.spotify.com/v1/me/player', {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ device_ids: [deviceId], play: false }),
-      });
-      // Wait for transfer
-      await new Promise((r) => setTimeout(r, 300));
-      // Play the specific URI — tracks use `uris`, playlists/albums use `context_uri`
+      if (deviceId) {
+        // Transfer to YumiVibe device first
+        await fetch('https://api.spotify.com/v1/me/player', {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_ids: [deviceId], play: false }),
+        });
+        await new Promise((r) => setTimeout(r, 300));
+      }
       const isTrack = uri.startsWith('spotify:track:');
       const body = isTrack
-        ? { uris: [uri], device_id: deviceId }
-        : { context_uri: uri, device_id: deviceId };
+        ? { uris: [uri] }
+        : { context_uri: uri };
       await spotifyApi('/play', accessToken, 'PUT', body);
     } else {
-      // Resume playback on this device
-      await fetch('https://api.spotify.com/v1/me/player', {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ device_ids: [deviceId], play: true }),
-      });
+      if (deviceId) {
+        // Resume on YumiVibe device
+        await fetch('https://api.spotify.com/v1/me/player', {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_ids: [deviceId], play: true }),
+        });
+      } else {
+        // No SDK device — resume on whatever device is active
+        await spotifyApi('/play', accessToken, 'PUT');
+      }
     }
   }, [accessToken, deviceId]);
 
