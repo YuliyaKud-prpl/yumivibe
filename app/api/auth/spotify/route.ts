@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server';
-import crypto from 'crypto';
 
 const SPOTIFY_AUTH_URL = 'https://accounts.spotify.com/authorize';
 const SCOPES = [
@@ -10,6 +9,12 @@ const SCOPES = [
   'user-read-playback-state',
 ].join(' ');
 
+function generateState(): string {
+  const bytes = new Uint8Array(32);
+  globalThis.crypto.getRandomValues(bytes);
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
 export async function GET(request: NextRequest) {
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   if (!clientId) {
@@ -19,8 +24,7 @@ export async function GET(request: NextRequest) {
   const origin = request.nextUrl.origin;
   const redirectUri = `${origin}/api/auth/spotify/callback`;
 
-  // H1: Generate CSRF state parameter
-  const state = crypto.randomBytes(32).toString('hex');
+  const state = generateState();
 
   const params = new URLSearchParams({
     response_type: 'code',
