@@ -85,7 +85,8 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     const trimmed = (url ?? urlInput).trim();
 
     if (!trimmed) {
-      // Clear — go back to context mode
+      // Clear — stop playback, go back to context mode
+      if (spotify.isConnected) spotify.pause();
       setEmbedUrl(null);
       setUrlInput('');
       setError(null);
