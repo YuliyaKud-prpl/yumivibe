@@ -197,7 +197,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
 
       {embedUrl ? (
         <>
-          <div className="flex-1 min-h-0 rounded-xl overflow-hidden mb-3" style={{ minHeight: '280px' }}>
+          <div className="flex-1 min-h-0 rounded-xl overflow-hidden mb-2">
             <iframe
               ref={iframeRef}
               src={embedUrl + '?utm_source=generator&theme=0'}
@@ -205,7 +205,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
               loading="lazy"
               className="w-full h-full"
-              style={{ minHeight: '280px' }}
+              style={{ minHeight: '152px' }}
             />
           </div>
 
