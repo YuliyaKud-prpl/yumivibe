@@ -58,31 +58,35 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const [error, setError] = useState<string | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Voice control — Web API for connected users, embed postMessage fallback
+  // Voice control:
+  // - URL loaded → embed handles play/pause (postMessage), SDK handles skip/next
+  // - No URL → SDK handles everything (play resumes context)
   useEffect(() => {
     const unsubscribe = subscribeMedia('spotify', (command) => {
-      if (spotify.isConnected) {
-        if (command === 'next') { spotify.next(); return; }
-        if (command === 'previous') { spotify.previous(); return; }
-        if (command === 'play') {
-          // If user explicitly picked a URL, play that; otherwise resume last context
-          const uri = userPickedUrl && urlInput ? toSpotifyUri(urlInput) : undefined;
-          spotify.play(uri ?? undefined);
-          return;
-        }
-        if (command === 'pause') { spotify.pause(); return; }
+      // Skip/next/previous always via SDK when connected
+      if (spotify.isConnected && (command === 'next' || command === 'previous')) {
+        if (command === 'next') spotify.next();
+        else spotify.previous();
+        return;
       }
-      // Fallback: embed postMessage
-      if (command !== 'play' && command !== 'pause') return;
-      const iframe = iframeRef.current;
-      if (!iframe?.contentWindow) return;
-      iframe.contentWindow.postMessage({ command }, 'https://open.spotify.com');
-      setTimeout(() => {
-        iframe.contentWindow?.postMessage({ command }, 'https://open.spotify.com');
-      }, 300);
+
+      if (embedUrl) {
+        // URL loaded — use embed for play/pause
+        if (command !== 'play' && command !== 'pause') return;
+        const iframe = iframeRef.current;
+        if (!iframe?.contentWindow) return;
+        iframe.contentWindow.postMessage({ command }, 'https://open.spotify.com');
+        setTimeout(() => {
+          iframe.contentWindow?.postMessage({ command }, 'https://open.spotify.com');
+        }, 300);
+      } else if (spotify.isConnected) {
+        // No URL — use SDK to play/pause context
+        if (command === 'play') spotify.play();
+        else if (command === 'pause') spotify.pause();
+      }
     });
     return unsubscribe;
-  }, [spotify, urlInput, userPickedUrl]);
+  }, [spotify, embedUrl]);
 
   const loadEmbed = useCallback((url?: string) => {
     const trimmed = (url ?? urlInput).trim();
