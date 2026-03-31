@@ -116,9 +116,40 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>
       {error && <p className="text-error text-xs mb-2">{error}</p>}
 
+      {/* Now Playing bar — shows above embed or quick picks when SDK is playing */}
+      {spotify.isConnected && spotify.currentTrack && (
+        <div className="flex items-center gap-3 mb-2 p-2 rounded-xl bg-surface-container-low">
+          {spotify.currentTrack.albumArt && (
+            <img
+              src={spotify.currentTrack.albumArt}
+              alt={spotify.currentTrack.album}
+              className="w-10 h-10 rounded-lg object-cover shrink-0"
+              referrerPolicy="no-referrer"
+            />
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold text-on-surface truncate">{spotify.currentTrack.name}</p>
+            <p className="text-[10px] text-on-surface-variant truncate">{spotify.currentTrack.artist}</p>
+          </div>
+          <div className="flex items-center gap-0.5 shrink-0">
+            <button onClick={spotify.previous} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-base cursor-pointer">skip_previous</button>
+            <button
+              onClick={spotify.togglePlay}
+              className="w-7 h-7 flex items-center justify-center rounded-full text-white cursor-pointer"
+              style={{ backgroundColor: accent }}
+            >
+              <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>
+                {spotify.currentTrack.isPlaying ? 'pause' : 'play_arrow'}
+              </span>
+            </button>
+            <button onClick={spotify.next} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-base cursor-pointer">skip_next</button>
+          </div>
+        </div>
+      )}
+
       {embedUrl ? (
         <>
-          {/* Embed player — always handles playback */}
+          {/* Embed player */}
           <div className="flex-1 min-h-0 rounded-xl overflow-hidden mb-2">
             <iframe
               ref={iframeRef}
@@ -173,37 +204,6 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
         </>
       ) : (
         <>
-          {/* Now Playing — when connected, no embed, SDK is playing */}
-          {spotify.isConnected && spotify.currentTrack ? (
-            <div className="flex items-center gap-3 mb-3 p-2 rounded-xl bg-surface-container-low">
-              {spotify.currentTrack.albumArt && (
-                <img
-                  src={spotify.currentTrack.albumArt}
-                  alt={spotify.currentTrack.album}
-                  className="w-12 h-12 rounded-lg object-cover shrink-0"
-                  referrerPolicy="no-referrer"
-                />
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-on-surface truncate">{spotify.currentTrack.name}</p>
-                <p className="text-xs text-on-surface-variant truncate">{spotify.currentTrack.artist}</p>
-              </div>
-              <div className="flex items-center gap-1 shrink-0">
-                <button onClick={spotify.previous} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-lg cursor-pointer">skip_previous</button>
-                <button
-                  onClick={spotify.togglePlay}
-                  className="w-8 h-8 flex items-center justify-center rounded-full text-white cursor-pointer"
-                  style={{ backgroundColor: accent }}
-                >
-                  <span className="material-symbols-outlined text-base" style={{ fontVariationSettings: "'FILL' 1" }}>
-                    {spotify.currentTrack.isPlaying ? 'pause' : 'play_arrow'}
-                  </span>
-                </button>
-                <button onClick={spotify.next} className="material-symbols-outlined text-on-surface-variant hover:text-on-surface text-lg cursor-pointer">skip_next</button>
-              </div>
-            </div>
-          ) : null}
-
           {/* Quick picks — show when nothing is playing */}
           {!(spotify.isConnected && spotify.currentTrack) && (
             <div className="mb-3">
