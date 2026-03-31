@@ -59,19 +59,12 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   // Voice control:
-  // - URL loaded → embed handles play/pause (postMessage), SDK handles skip/next
-  // - No URL → SDK handles everything (play resumes context)
+  // - URL loaded → embed handles play/pause, skip/next disabled (embed doesn't support it)
+  // - No URL → SDK handles everything (play/pause/skip/next on user's context)
   useEffect(() => {
     const unsubscribe = subscribeMedia('spotify', (command) => {
-      // Skip/next/previous always via SDK when connected
-      if (spotify.isConnected && (command === 'next' || command === 'previous')) {
-        if (command === 'next') spotify.next();
-        else spotify.previous();
-        return;
-      }
-
       if (embedUrl) {
-        // URL loaded — use embed for play/pause
+        // URL loaded — embed handles play/pause only
         if (command !== 'play' && command !== 'pause') return;
         const iframe = iframeRef.current;
         if (!iframe?.contentWindow) return;
@@ -80,9 +73,11 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
           iframe.contentWindow?.postMessage({ command }, 'https://open.spotify.com');
         }, 300);
       } else if (spotify.isConnected) {
-        // No URL — use SDK to play/pause context
+        // No URL — SDK controls user's context
         if (command === 'play') spotify.play();
         else if (command === 'pause') spotify.pause();
+        else if (command === 'next') spotify.next();
+        else if (command === 'previous') spotify.previous();
       }
     });
     return unsubscribe;
