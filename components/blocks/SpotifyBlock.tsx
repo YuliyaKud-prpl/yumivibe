@@ -108,14 +108,19 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     setUrlInput(trimmed);
     setUserPickedUrl(true);
     onUpdate({ ...block.content, embedUrl: trimmed });
-  }, [urlInput, block.content, onUpdate]);
+
+    // Stop SDK playback so embed takes over without conflict
+    if (spotify.isConnected) {
+      spotify.pause();
+    }
+  }, [urlInput, block.content, onUpdate, spotify]);
 
   return (
     <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>
       {error && <p className="text-error text-xs mb-2">{error}</p>}
 
-      {/* Now Playing bar — shows above embed or quick picks when SDK is playing */}
-      {spotify.isConnected && spotify.currentTrack && (
+      {/* Now Playing bar — only when no embed URL (playing from context) */}
+      {!embedUrl && spotify.isConnected && spotify.currentTrack && (
         <div className="flex items-center gap-3 mb-2 p-2 rounded-xl bg-surface-container-low">
           {spotify.currentTrack.albumArt && (
             <img
