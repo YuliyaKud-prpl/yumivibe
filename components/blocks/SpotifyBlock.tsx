@@ -104,13 +104,7 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
     setUrlInput(trimmed);
     setUserPickedUrl(true);
     onUpdate({ ...block.content, embedUrl: trimmed });
-
-    // If connected, also play via Web API
-    if (spotify.isConnected) {
-      const uri = toSpotifyUri(trimmed);
-      if (uri) spotify.play(uri);
-    }
-  }, [urlInput, block.content, onUpdate, spotify]);
+  }, [urlInput, block.content, onUpdate]);
 
   return (
     <div className="p-4 h-full flex flex-col rounded-2xl bg-surface-container-lowest border" style={{ borderColor: accent + '15' }}>
