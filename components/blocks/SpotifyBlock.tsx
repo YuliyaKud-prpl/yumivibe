@@ -48,9 +48,10 @@ export function SpotifyBlock({ block, onUpdate }: BlockProps) {
   const { dashboard } = useDashboardContext();
   const spotify = useSpotify();
   const accent = dashboard.accentColor ?? '#237227';
-  const savedUrl = (block.content.embedUrl as string) ?? '';
+  const rawSavedUrl = (block.content.embedUrl as string) ?? '';
+  const savedUrl = rawSavedUrl === FALLBACK_URL ? '' : rawSavedUrl;
   const [urlInput, setUrlInput] = useState(savedUrl);
-  const [userPickedUrl, setUserPickedUrl] = useState(!!savedUrl && savedUrl !== FALLBACK_URL);
+  const [userPickedUrl, setUserPickedUrl] = useState(!!savedUrl);
   const [embedUrl, setEmbedUrl] = useState<string | null>(() =>
     savedUrl ? toEmbedUrl(savedUrl) ?? savedUrl : null
   );
