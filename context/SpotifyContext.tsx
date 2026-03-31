@@ -121,9 +121,13 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
 
   const doRefresh = useCallback(async (refresh: string) => {
     try {
+      const authToken = loadFromStorage<string>('yumivibe-auth-token');
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+
       const res = await fetch('/api/auth/spotify/refresh', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ refreshToken: refresh }),
       });
       const json = await res.json();
@@ -164,44 +168,34 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
     removeFromStorage(SPOTIFY_EXPIRY_KEY);
   }, [player]);
 
-  const activateDevice = useCallback(async () => {
-    if (!accessToken || !deviceId) return false;
-    const res = await fetch('https://api.spotify.com/v1/me/player', {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ device_ids: [deviceId], play: false }),
-    });
-    return res.ok || res.status === 204;
-  }, [accessToken, deviceId]);
-
   const play = useCallback(async (uri?: string) => {
     if (!accessToken) return;
 
-    // Always try to activate SDK device first
+    // Transfer playback to YumiVibe SDK device if available
     if (deviceId) {
-      await activateDevice();
-      await new Promise((r) => setTimeout(r, 500));
+      await fetch('https://api.spotify.com/v1/me/player', {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ device_ids: [deviceId], play: !uri }),
+      });
+      if (uri) {
+        await new Promise((r) => setTimeout(r, 300));
+      }
     }
 
     if (uri) {
       const isTrack = uri.startsWith('spotify:track:');
       const body = isTrack ? { uris: [uri] } : { context_uri: uri };
-      await spotifyApi('/play', accessToken, 'PUT', body);
-    } else {
-      // Resume playback
-      await spotifyApi('/play', accessToken, 'PUT');
-
-      // If that failed (no active device), retry after SDK device activates
-      if (!deviceId) {
-        await new Promise((r) => setTimeout(r, 2000));
-        if (deviceId) {
-          await activateDevice();
-          await new Promise((r) => setTimeout(r, 500));
-          await spotifyApi('/play', accessToken, 'PUT');
-        }
+      if (deviceId) {
+        await spotifyApi('/play', accessToken, 'PUT', { ...body, device_id: deviceId });
+      } else {
+        await spotifyApi('/play', accessToken, 'PUT', body);
       }
+    } else if (!deviceId) {
+      // No SDK device — try to resume on any active device
+      await spotifyApi('/play', accessToken, 'PUT');
     }
-  }, [accessToken, deviceId, activateDevice]);
+  }, [accessToken, deviceId]);
 
   const pause = useCallback(async () => {
     if (!accessToken) return;
