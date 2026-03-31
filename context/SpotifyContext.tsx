@@ -167,28 +167,26 @@ export function SpotifyProvider({ children }: SpotifyProviderProps) {
   const play = useCallback(async (uri?: string) => {
     if (!accessToken) return;
 
-    // Transfer playback to YumiVibe SDK device if available
-    if (deviceId) {
-      await fetch('https://api.spotify.com/v1/me/player', {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ device_ids: [deviceId], play: !uri }),
-      });
-      if (uri) {
-        await new Promise((r) => setTimeout(r, 300));
-      }
-    }
-
     if (uri) {
-      const isTrack = uri.startsWith('spotify:track:');
-      const body = isTrack ? { uris: [uri] } : { context_uri: uri };
+      // Play specific track/playlist — transfer to SDK device if available
       if (deviceId) {
-        await spotifyApi('/play', accessToken, 'PUT', { ...body, device_id: deviceId });
+        await fetch('https://api.spotify.com/v1/me/player', {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ device_ids: [deviceId], play: false }),
+        });
+        await new Promise((r) => setTimeout(r, 300));
+        const isTrack = uri.startsWith('spotify:track:');
+        const body = isTrack ? { uris: [uri], device_id: deviceId } : { context_uri: uri, device_id: deviceId };
+        await spotifyApi('/play', accessToken, 'PUT', body);
       } else {
+        const isTrack = uri.startsWith('spotify:track:');
+        const body = isTrack ? { uris: [uri] } : { context_uri: uri };
         await spotifyApi('/play', accessToken, 'PUT', body);
       }
-    } else if (!deviceId) {
-      // No SDK device — try to resume on any active device
+    } else {
+      // No URI — resume last context on ANY device (don't transfer to SDK)
+      // This plays whatever the user was last listening to
       await spotifyApi('/play', accessToken, 'PUT');
     }
   }, [accessToken, deviceId]);
